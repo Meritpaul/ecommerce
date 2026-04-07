@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Featured Categories -->
+<div class="p-4">
+    <h2 class="font-bold mb-3 text-lg">Featured Categories</h2>
+
+    <div class="flex gap-4 overflow-x-auto">
+
+        <div class="bg-white p-4 rounded-xl shadow text-center min-w-[120px]">
+            🥜
+            <p>Nuts</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow text-center min-w-[120px]">
+            🌶️
+            <p>Spices</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow text-center min-w-[120px]">
+            🍯
+            <p>Honey</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow text-center min-w-[120px]">
+            🍎
+            <p>Fruits</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- 🔥 SLIDER -->
+<div class="p-4">
+    <img id="slider"
+    src="/media/banner1.jpg"
+    class="w-full h-60 object-contain bg-white rounded-xl shadow transition duration-500">
+
+    <div class="flex justify-center mt-2 gap-2">
+        <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+        <span class="w-2 h-2 bg-gray-300 rounded-full"></span>
+        <span class="w-2 h-2 bg-gray-300 rounded-full"></span>
+    </div>
+</div>
+
+
+<script>
+let images = [
+    "/media/banner1.jpg",
+    "/media/banner2.jpg",
+    "/media/banner3.jpg"
+];
+
+let i = 0;
+let slider = document.getElementById("slider");
+
+setInterval(() => {
+    slider.style.opacity = 0;
+
+    setTimeout(() => {
+        i = (i + 1) % images.length;
+        slider.src = images[i];
+        slider.style.opacity = 1;
+    }, 300);
+
+}, 3000);
+</script>
+
+<!-- Products -->
+{% if products %}
+<div class="p-4 grid grid-cols-2 md:grid-cols-3 gap-6">
+
+    {% for product in products %}
+
+    <div class="product-card bg-white rounded-xl shadow hover:shadow-lg transition p-3">
+
+        <!-- ✅ ONLY ONE IMAGE -->
+        <img src="{{ product.image.url }}"
+            class="w-full h-40 object-cover rounded">
+
+        <h2 class="mt-2 font-semibold text-sm">
+            {{ product.name }}
+        </h2>
+
+        <p class="text-green-600 font-bold">
+            {{ product.price }} TK
+        </p>
+
+        <!-- ✅ BUTTON (UPDATED) -->
+        <button onclick="addToCart({{ product.id }}, this)"
+            class="bg-orange-500 text-white px-3 py-1 rounded mt-2 w-full">
+            Add to Cart
+        </button>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+<p class="text-center text-gray-500 mt-10">
+    No products found 😢
+</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+
+    <div class="bg-white p-8 rounded-xl shadow w-full max-w-md">
+
+        <h2 class="text-xl font-bold text-center mb-4">
+            🔐 Verify OTP
+        </h2>
+
+        <p class="text-center text-sm mb-4">
+            OTP sent to {{ phone }}
+        </p>
+
+        {% if error %}
+            <p class="text-red-500 text-sm mb-2 text-center">
+                {{ error }}
+            </p>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="text" name="otp"
+                placeholder="Enter OTP"
+                class="w-full border p-3 rounded mb-3" required>
+
+            <button name="verify_otp"
+                class="w-full bg-green-500 text-white py-2 rounded">
+                Verify & Login
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

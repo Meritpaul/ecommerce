@@ -7,31 +7,22 @@
     <h2 class="font-bold mb-3 text-lg">Featured Categories</h2>
 
     <div class="flex gap-4 overflow-x-auto">
-
-        <div class="bg-white p-4 rounded-xl shadow text-center min-w-[120px]">
-            🥜
-            <p>Nuts</p>
-        </div>
-
-        <div class="bg-white p-4 rounded-xl shadow text-center min-w-[120px]">
-            🌶️
-            <p>Spices</p>
-        </div>
-
-        <div class="bg-white p-4 rounded-xl shadow text-center min-w-[120px]">
-            🍯
-            <p>Honey</p>
-        </div>
-
-        <div class="bg-white p-4 rounded-xl shadow text-center min-w-[120px]">
-            🍎
-            <p>Fruits</p>
-        </div>
-
+        {% for cat in categories %}
+        <a href="?category={{ cat.id }}"
+            class="bg-white p-3 rounded-xl shadow text-center min-w-[100px] hover:shadow-lg transition">
+            
+            <img src="{{ cat.image.url }}"
+                class="w-12 h-12 mx-auto object-cover rounded-full mb-1">
+                
+            <p class="text-sm font-medium">
+                {{ cat.name }}
+            </p>
+        </a>
+        {% endfor %}
     </div>
 </div>
 
-<!-- 🔥 SLIDER -->
+<!-- SLIDER -->
 <div class="p-4">
     <img id="slider"
     src="/media/banner1.jpg"
@@ -44,14 +35,8 @@
     </div>
 </div>
 
-
 <script>
-let images = [
-    "/media/banner1.jpg",
-    "/media/banner2.jpg",
-    "/media/banner3.jpg"
-];
-
+let images = ["/media/banner1.jpg","/media/banner2.jpg","/media/banner3.jpg"];
 let i = 0;
 let slider = document.getElementById("slider");
 
@@ -67,42 +52,143 @@ setInterval(() => {
 }, 3000);
 </script>
 
-<!-- Products -->
+<!-- PRODUCTS -->
 {% if products %}
 <div class="p-4 grid grid-cols-2 md:grid-cols-3 gap-6">
 
-    {% for product in products %}
+{% for product in products %}
 
-    <div class="product-card bg-white rounded-xl shadow hover:shadow-lg transition p-3">
+<div class="bg-white rounded-2xl shadow hover:shadow-2xl transition duration-300 overflow-hidden group relative">
 
-        <!-- ✅ ONLY ONE IMAGE -->
-        <img src="{{ product.image.url }}"
-            class="w-full h-40 object-cover rounded">
+    <!-- DISCOUNT
+    <span class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-lg z-10">
+        Hot
+    </span>-->
 
-        <h2 class="mt-2 font-semibold text-sm">
+    <!-- WISHLIST -->
+    <button class="absolute top-2 right-2 bg-white/90 backdrop-blur p-2 rounded-full shadow hover:scale-110 hover:text-red-500 transition z-10">
+        ❤️
+    </button>
+
+    <!-- IMAGE -->
+    <div class="overflow-hidden bg-gray-100">
+        <img src="{{ product.image.url }}" 
+            class="w-full h-44 object-cover group-hover:scale-110 transition duration-500">
+    </div>
+
+    <!-- INFO -->
+    <div class="p-4">
+
+        <h3 class="font-semibold text-sm md:text-base line-clamp-1">
             {{ product.name }}
-        </h2>
+        </h3>
 
-        <p class="text-green-600 font-bold">
-            {{ product.price }} TK
+        <div class="flex items-center justify-between mt-2">
+
+            <p class="text-green-600 font-bold text-lg">
+                {{ product.price }} TK
+            </p>
+
+            {% if product.stock > 0 %}
+            <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
+                In Stock
+            </span>
+            {% else %}
+            <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                Out Stock
+            </span>
+            {% endif %}
+
+        </div>
+
+        <!-- STOCK -->
+        <p class="text-sm text-gray-500 mt-1">
+            Stock Left: {{ product.stock }}
         </p>
 
-        <!-- ✅ BUTTON (UPDATED) -->
-        <button onclick="addToCart({{ product.id }}, this)"
-            class="bg-orange-500 text-white px-3 py-1 rounded mt-2 w-full">
-            Add to Cart
-        </button>
+        <!-- BUTTON -->
+        <div class="mt-4">
+
+            {% if product.stock > 0 %}
+
+            <button 
+                onclick="handleAdd(this, {{ product.id }})"
+                class="w-full border border-orange-500 text-orange-500 py-2 rounded-xl
+                    transition duration-300
+                    hover:bg-orange-500 hover:text-white
+                    hover:shadow-lg hover:shadow-orange-200">
+
+                Add to Cart
+
+            </button>
+
+            {% else %}
+
+            <button
+                class="w-full bg-gray-200 text-gray-500 py-2 rounded-xl cursor-not-allowed">
+
+                Out of Stock
+
+            </button>
+
+            {% endif %}
+
+        </div>
 
     </div>
 
-    {% endfor %}
+</div>
+
+{% endfor %}
 
 </div>
 
 {% else %}
+
 <p class="text-center text-gray-500 mt-10">
     No products found 😢
 </p>
+
 {% endif %}
+
+<!-- ADD ANIMATION -->
+<script>
+function handleAdd(btn, id) {
+
+    addToCart(id);
+
+    let originalText = btn.innerText;
+
+    btn.innerText = "✓ Added";
+    btn.classList.remove(
+        "border-orange-500",
+        "text-orange-500",
+        "hover:bg-orange-500"
+    );
+
+    btn.classList.add(
+        "bg-green-500",
+        "text-white",
+        "border-green-500"
+    );
+
+    setTimeout(() => {
+
+        btn.innerText = originalText;
+
+        btn.classList.remove(
+            "bg-green-500",
+            "text-white",
+            "border-green-500"
+        );
+
+        btn.classList.add(
+            "border-orange-500",
+            "text-orange-500"
+        );
+
+    }, 1500);
+}
+</script>
 
 {% endblock %}

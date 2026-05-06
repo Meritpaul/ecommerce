@@ -75,12 +75,22 @@ def payment_success(request):
     )
 
     for item in cart:
+        product = item['product']
+        quantity = item['quantity']
+        
+        # ✅ CREATE ORDER ITEM
+        
         OrderItem.objects.create(
             order=order,
-            product=item['product'],
-            quantity=item['quantity'],
-            price=item['product'].price
+            product=product,
+            quantity=quantity,
+            price=product.price
         )
+        
+        # ✅ REDUCE STOCK
+        
+        product.stock -= quantity
+        product.save()
 
     request.session['cart'] = {}
 

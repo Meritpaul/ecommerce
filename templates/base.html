@@ -1,285 +1,310 @@
 <!DOCTYPE html>
+<html>
 <head>
-    <title>Shop</title>
+    <title>PureShop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     {% load static %}
 </head>
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow px-4 py-3 flex items-center justify-between">
-        <!-- LEFT: Menu + Logo -->
-        <div class="flex items-center gap-3">
-            <span onclick="toggleMenu()" class="text-2xl cursor-pointer">☰</span>
-            <div class="flex items-center gap-2">
-                <div class="bg-orange-500 text-white p-2 rounded-lg font-bold">🌿</div>
-                <span class="text-gray-800 font-semibold text-lg">
-                    Pure<span class="text-orange-500">Shop</span>
-                </span>
-            </div>
-        </div>
+<body class="bg-gray-50">
 
-        <!-- Search Bar -->
-        <div class="bg-white px-4 py-2 shadow-sm">
-            <form method="GET" class="flex">
-                <input type="text" name="q"
-                    value="{{ request.GET.q }}"
-                    placeholder="Search for products..."
-                    class="w-full px-4 py-2 border rounded-l-lg focus:outline-none">
-                <button class="bg-orange-500 text-white px-4 rounded-r-lg">🔍</button>
-            </form>
-        </div>
+<!-- NAVBAR -->
+<nav class="bg-white shadow px-4 py-3 flex items-center justify-between">
 
-        <!-- Right icons -->
-        <div class="relative cursor-pointer" onclick="toggleCart()">
-            🛒
-            <span id="cart-count"
-            class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 rounded-full transition transform duration-300">
-            0
-            </span>
-        </div>
-    </nav>
+    <div class="flex items-center gap-3">
+        <span onclick="toggleMenu()" class="text-2xl cursor-pointer">☰</span>
 
-    <!-- Overlay -->
-    <div id="overlay"
-        onclick="toggleMenu()"
-        class="fixed inset-0 bg-black opacity-30 hidden z-40">
-    </div>
-
-    <!-- Side menu -->
-    <div id="sideMenu"
-        class="fixed top-0 left-0 -translate-x-full w-64 h-full bg-white shadow transform transition duration-300 z-50">
-        <div class="p-4 border-b font-bold text-lg">Menu</div>
-        <div class="flex flex-col p-4 gap-3">
-            <a href="/">🏠 Home</a>
-            <a href="#">📦 Categories</a>
-            <a href="/cart/">🛒 Cart</a>
-            <a href="/my-orders/">📦 My Orders</a>
-            <a href="/login/">👤 Login</a>
-        </div>
-    </div>
-
-    <!-- Main content -->
-    <div class="max-w-6xl mx-auto">
-        {% block content %}{% endblock %}
-    </div>
-
-    <!-- Cart Drawer -->
-    <div id="cart-overlay"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"
-        onclick="toggleCart()">
-    </div>
-        
-    <!-- Drawer -->
-    <div id="cart-drawer"
-        class="fixed top-0 right-0 w-96 h-full bg-white shadow-lg transform translate-x-full transition duration-300 z-50">
-        
-        <!-- Header -->
-        <div class="flex justify-between items-center p-4 border-b">
-            <h2 class="text-xl font-bold">Shopping Cart</h2>
-            <button onclick="toggleCart()" class="text-red-500">Close ✕</button>
-        </div>
-        <!-- Cart Items -->
-        <div id="cart-items" class="p-4 overflow-y-auto h-[70%]">
-            Loading...
-        </div>
-        
-        <!-- Footer -->
-        <div class="absolute bottom-0 w-full p-4 border-t bg-white">
-            <div class="flex justify-between font-bold text-lg">
-                <span>Total:</span>
-                <span id="grand-total">{{ cart.get_total_price }} TK</span>
+        <a href="/" class="flex items-center gap-2 hover:scale-105 transition duration-200">
+            
+            <div class="bg-orange-500 text-white p-2 rounded-lg font-bold">
+                🌿
             </div>
             
-            <a href="/checkout/" onclick="toggleCart()"
-                class="block text-center w-full bg-orange-500 text-white py-2 mt-2 rounded">
-                Checkout
-            </a>
-        </div>
+            <span class="text-gray-800 font-semibold text-lg">
+                Pure<span class="text-orange-500">Shop</span>
+            </span>
+        </a>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="bg-white px-4 py-2 shadow-sm w-1/2 hidden md:block">
+        <form method="GET" class="flex">
+            <input type="text" name="q"
+                value="{{ request.GET.q }}"
+                placeholder="Search products..."
+                class="w-full px-4 py-2 border rounded-l-lg focus:outline-none">
+            <button class="bg-orange-500 text-white px-4 rounded-r-lg">🔍</button>
+        </form>
     </div>
     
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white text-center p-4 mt-10">
-        <p>© 2026 PureShop | Organic E-commerce</p>
-    </footer>
+    <!-- CART -->
+    <div class="relative cursor-pointer" onclick="toggleCart()">
+        🛒
+        <span id="cart-count"
+        class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 rounded-full">
+        0
+        </span>
+    </div>
 
-    <!-- JS -->
-    <script>
-        // Toggle side menu
-        function toggleMenu() {
-            let menu = document.getElementById("sideMenu");
-            let overlay = document.getElementById("overlay");
-            menu.classList.toggle("-translate-x-full");
-            overlay.classList.toggle("hidden");
-        }
-    </script>
+</nav>
 
-    {% load static %}
-    <script src="{% static 'js/cart.js' %}"></script>
+<!-- SIDE MENU -->
+<div id="overlay"
+    onclick="toggleMenu()"
+    class="fixed inset-0 bg-black opacity-30 hidden z-40"></div>
 
+<div id="sideMenu"
+    class="fixed top-0 left-0 -translate-x-full w-64 h-full bg-white shadow transform transition duration-300 z-50">
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
+    <div class="p-4 border-b font-bold text-lg">Menu</div>
 
-            function flyToCart(imgElement) {
-                let cartIcon = document.querySelector('#cart-count');
-                
-                let imgClone = imgElement.cloneNode(true);
-                imgClone.style.position = 'fixed';
-                imgClone.style.zIndex = 1000;
-                imgClone.style.width = '50px';
-                
-                let rect = imgElement.getBoundingClientRect();
-                
-                imgClone.style.left = rect.left + 'px';
-                imgClone.style.top = rect.top + 'px';
-                document.body.appendChild(imgClone);
-                
-                let cartRect = cartIcon.getBoundingClientRect();
-                
-                imgClone.style.transition = 'all 0.7s ease-in-out';
-                imgClone.style.left = cartRect.left + 'px';
-                imgClone.style.top = cartRect.top + 'px';
-                imgClone.style.opacity = 0.3;
-                
-                setTimeout(() => {
-                    imgClone.remove();
-                }, 700);
+    <div class="flex flex-col p-4 gap-3">
+        <a href="/">🏠 Home</a>
+        <a href="/cart/">🛒 Cart</a>
+        <a href="/my-orders/">📦 My Orders</a>
+        <a href="/login/">👤 Login</a>
+    </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="max-w-6xl mx-auto">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- CART DRAWER -->
+<div id="cart-overlay"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"
+    onclick="toggleCart()"></div>
+
+<div id="cart-drawer"
+    class="fixed top-0 right-0 w-96 h-full bg-white shadow-lg transform translate-x-full transition duration-300 z-50">
+
+    <div class="flex justify-between items-center p-4 border-b">
+        <h2 class="text-xl font-bold">Shopping Cart</h2>
+        <button onclick="toggleCart()" class="text-red-500">✕</button>
+    </div>
+
+    <div id="cart-items" class="p-4 overflow-y-auto h-[70%]"></div>
+
+    <div class="absolute bottom-0 w-full p-4 border-t bg-white">
+        <div class="flex justify-between font-bold text-lg">
+            <span>Total:</span>
+            <span id="grand-total">0 TK</span>
+        </div>
+
+        <a href="/checkout/"
+            class="block text-center w-full bg-orange-500 text-white py-2 mt-2 rounded">
+            Checkout
+        </a>
+    </div>
+
+</div>
+
+<!-- FLOATING CART -->
+<div class="fixed right-4 top-1/3 z-50">
+    <div onclick="toggleCart()"
+        class="bg-orange-500 text-white px-4 py-3 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition">
+
+        <div class="text-center">
+            <div class="text-sm">🛒 <span id="floating-count">0</span> Items</div>
+            <div class="font-bold" id="floating-total">0 TK</div>
+        </div>
+
+    </div>
+</div>
+
+<!-- CHAT -->
+<div class="fixed bottom-5 right-5 z-50">
+    <div onclick="openChat()"
+        class="bg-orange-500 text-white p-4 rounded-full shadow-lg cursor-pointer hover:scale-110 transition">
+        💬
+    </div>
+</div>
+
+<!-- 🔥 FOOTER -->
+<footer class="bg-gray-900 text-gray-300 mt-10">
+
+    <div class="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-4 gap-8">
+
+        <!-- BRAND -->
+        <div>
+            <h2 class="text-xl font-bold text-white mb-3">
+                🌿 PureShop
+            </h2>
+            <p class="text-sm">
+                Fresh organic products delivered to your door. Quality + Trust 💚
+            </p>
+        </div>
+
+        <!-- CATEGORIES (DYNAMIC) -->
+        <div>
+            <h3 class="text-white font-semibold mb-3">Categories</h3>
+
+            <ul class="space-y-2 text-sm">
+                {% for cat in categories|slice:":6" %}
+                <li>
+                    <a href="/?category={{ cat.id }}" class="hover:text-orange-400">
+                        {{ cat.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- QUICK LINKS -->
+        <div>
+            <h3 class="text-white font-semibold mb-3">Quick Links</h3>
+
+            <ul class="space-y-2 text-sm">
+                <li><a href="/" class="hover:text-orange-400">Home</a></li>
+                <li><a href="/cart/" class="hover:text-orange-400">Cart</a></li>
+                <li><a href="/my-orders/" class="hover:text-orange-400">My Orders</a></li>
+                <li><a href="/login/" class="hover:text-orange-400">Login</a></li>
+            </ul>
+        </div>
+
+        <!-- CONTACT -->
+        <div>
+            <h3 class="text-white font-semibold mb-3">Contact</h3>
+
+            <p class="text-sm">📍 Uttara, Dhaka, Bangladesh</p>
+            <p class="text-sm">📞 +880 1812-10912</p>
+            <p class="text-sm">✉ support@pureshop.com</p>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM BAR -->
+    <div class="border-t border-gray-700 text-center py-4 text-sm">
+
+        © <span id="year"></span> PureShop. All rights reserved.
+
+    </div>
+
+</footer>
+
+<!-- JS -->
+<script>
+
+function toggleMenu() {
+    document.getElementById("sideMenu").classList.toggle("-translate-x-full");
+    document.getElementById("overlay").classList.toggle("hidden");
+}
+
+function openChat() {
+    alert("Chat coming soon 😄");
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const cartCount = document.getElementById('cart-count');
+    const grandTotal = document.getElementById('grand-total');
+
+    window.toggleCart = function () {
+        document.getElementById('cart-drawer').classList.toggle('translate-x-full');
+        document.getElementById('cart-overlay').classList.toggle('hidden');
+        loadCart();
+    };
+
+    window.loadCart = function() {
+        fetch('/cart/api/')
+        .then(res => res.json())
+        .then(data => {
+
+            let container = document.getElementById('cart-items');
+            container.innerHTML = '';
+
+            if (data.items.length === 0) {
+                container.innerHTML = "<p class='text-gray-500'>Cart is empty</p>";
+                grandTotal.innerText = "0 TK";
+                cartCount.innerText = "0";
+                return;
             }
-            
-            const cartCount = document.getElementById('cart-count');
-            const grandTotal = document.getElementById('grand-total');
-            
-            // ✅ Toggle Cart
-            window.toggleCart = function () {
-                let drawer = document.getElementById('cart-drawer');
-                let overlay = document.getElementById('cart-overlay');
-                
-                drawer.classList.toggle('translate-x-full');
-                overlay.classList.toggle('hidden');
-                
-                if (!drawer.classList.contains('translate-x-full')) {
+
+            data.items.forEach(item => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between border-b py-2">
+
+                        <div>
+                            <p class="font-semibold">${item.name}</p>
+                            <p class="text-sm text-gray-500">${item.price} TK</p>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button class="cart-btn bg-gray-200 px-2" data-action="decrease" data-product-id="${item.id}">−</button>
+                            <span>${item.quantity}</span>
+                            <button class="cart-btn bg-gray-200 px-2" data-action="increase" data-product-id="${item.id}">+</button>
+                        </div>
+
+                        <div class="text-right">
+                            <div class="text-green-600 font-bold">${item.total} TK</div>
+
+                            <button class="cart-btn text-red-500 text-xs"
+                                data-action="remove"
+                                data-product-id="${item.id}">
+                                Remove
+                            </button>
+                        </div>
+
+                    </div>
+                `;
+            });
+
+            grandTotal.innerText = data.total_price + " TK";
+            cartCount.innerText = data.total_quantity;
+
+            document.getElementById('floating-count').innerText = data.total_quantity;
+            document.getElementById('floating-total').innerText = data.total_price + " TK";
+        });
+    };
+
+    function updateUI(data) {
+        cartCount.innerText = data.total_quantity;
+        grandTotal.innerText = data.total_price + " TK";
+
+        document.getElementById('floating-count').innerText = data.total_quantity;
+        document.getElementById('floating-total').innerText = data.total_price + " TK";
+
+        cartCount.classList.add("scale-125");
+        setTimeout(() => {
+            cartCount.classList.remove("scale-125");
+        }, 200);
+    }
+
+    // ✅ ADD TO CART
+    window.addToCart = function(id) {
+        fetch(`/cart/add/${id}/`)
+        .then(res => res.json())
+        .then(data => {
+            updateUI(data);
+            loadCart();
+        });
+    };
+
+    // ✅ HANDLE BUTTONS
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('cart-btn')) {
+
+            let action = e.target.dataset.action;
+            let id = e.target.dataset.productId;
+
+            fetch(`/cart/${action}/${id}/`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    updateUI(data);
                     loadCart();
                 }
-            };
-            
-            // ✅ Load Cart (ONLY items)
-            window.loadCart = function() {
-                fetch('/cart/api/')
-                    .then(res => res.json())
-                    .then(data => {
-                        let container = document.getElementById('cart-items');
-                        container.innerHTML = '';
-                        
-                        if (data.items.length === 0) {
-                            container.innerHTML = "<p class='text-gray-500'>Cart is empty</p>";
-                            document.getElementById('grand-total').innerText = "0 TK";
-                            document.getElementById('cart-count').innerText = "0";
-                            return;
-                        }
-                        
-                        data.items.forEach(item => {
-                            container.innerHTML += `
-                                <div class="flex items-center justify-between border-b py-2">
-                                    <div class="flex items-center gap-3">
-                                        <img src="${item.image}" class="w-14 h-14 object-cover rounded">
-                                        <div>
-                                            <p class="font-semibold">${item.name}</p>
-                                            <p class="text-sm text-gray-500">${item.price} TK</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex items-center gap-2">
-                                        <button class="cart-btn bg-gray-200 px-2" data-action="decrease" data-product-id="${item.id}">−</button>
-                                        <span>${item.quantity}</span>
-                                        <button class="cart-btn bg-gray-200 px-2" data-action="increase" data-product-id="${item.id}">+</button>
-                                    </div>
-                                    
-                                    <div class="text-right">
-                                        <div class="text-green-600 font-bold">
-                                            ${item.total} TK
-                                        </div>
-                                        
-                                        <!-- ✅ ADD REMOVE BUTTON -->
-                                        <button class="cart-btn text-red-500 text-xs"
-                                            data-action="remove"
-                                            data-product-id="${item.id}">
-                                            Remove
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        
-                        // ✅ update total
-                        document.getElementById('grand-total').innerText = data.total_price + " TK";
-                        // ✅ update badge
-                        document.getElementById('cart-count').innerText = data.total_quantity;
-                    });
-            };
-            
-            // ✅ Update UI instantly
-            function updateUI(data) {
-                if (cartCount) {
-                    cartCount.innerText = data.total_quantity;
-                    
-                    // ✅ ADD ANIMATION HERE
-                    cartCount.classList.add("scale-125");
-                    setTimeout(() => {
-                        cartCount.classList.remove("scale-125");
-                    }, 200);
-                }
-                
-                if (grandTotal) {
-                    grandTotal.innerText = data.total_price + " TK";
-                }
-            }
-            
-            // ✅ Add to Cart (INSTANT)
-            window.addToCart = function(id, el) {
-                
-                let card = el.closest('.product-card');
-                let img = card ? card.querySelector('img') : null;
-                
-                if (img) {
-                    flyToCart(img);
-                }
-                
-                fetch(`/cart/add/${id}/`)
-                    .then(res => res.json())
-                    .then(data => {
-                        updateUI(data);
-                        loadCart();
-                    });
-            };
-            
-            // ✅ Handle + - remove (INSTANT)
-            document.addEventListener('click', function (e) {
-                if (e.target.classList.contains('cart-btn')) {
-                    
-                    let action = e.target.dataset.action;
-                    let id = e.target.dataset.productId;
-                    
-                    fetch(`/cart/${action}/${id}/`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                updateUI(data);
-                                loadCart();
-                            }
-                        });
-                }
             });
-        });
-        
-        // ✅ CART COUNT
-        function updateCartCount() {
-            let total = 0;
-            document.querySelectorAll('[id^="qty-"]').forEach(el => {
-                total += parseInt(el.innerText);
-            });
-            
-            document.getElementById('cart-count').innerText = total;
-        };
-    </script>
-    
+        }
+    });
+
+});
+</script>
+<script>
+    document.getElementById("year").innerText = new Date().getFullYear();
+</script>
+
+</body>
 </html>

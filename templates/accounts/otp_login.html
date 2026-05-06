@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+
+    <div class="bg-white p-8 rounded-xl shadow w-full max-w-md">
+
+        <h2 class="text-xl font-bold text-center mb-4">
+            📱 Login with Phone
+        </h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="text" name="phone"
+                placeholder="Enter phone number"
+                class="w-full border p-3 rounded mb-3" required>
+
+            <button name="send_otp"
+                class="w-full bg-orange-500 text-white py-2 rounded">
+                Send OTP
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

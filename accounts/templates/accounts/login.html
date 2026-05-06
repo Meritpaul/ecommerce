@@ -1,24 +1,96 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+{% extends 'base.html' %}
 
-<form method="post" class="bg-white p-6 rounded shadow w-80">
-    <h2 class="text-xl font-bold mb-4">Login</h2>
+{% block content %}
 
-    {% csrf_token %}
-    {{ form.as_p }}
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
 
-    <button class="bg-green-600 text-white w-full py-2 rounded mt-2">
-        Login
-    </button>
+    <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-4xl">
 
-    <p class="mt-2 text-sm">
-        No account? <a href="/register/" class="text-green-600">Register</a>
-    </p>
-</form>
+        <!-- Title -->
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold">🔐 Sign In</h2>
+            <p class="text-gray-500 text-sm">Access your account securely</p>
+        </div>
 
-</body>
-</html>
+        <div class="grid md:grid-cols-2 gap-6 items-center">
+
+            <!-- 🔹 LEFT: OTP LOGIN -->
+            <div class="bg-gray-50 p-6 rounded-xl">
+
+                <h3 class="font-semibold mb-3">Login with Mobile Number</h3>
+
+                <form method="POST" action="/otp-login/">
+                    {% csrf_token %}
+
+                    <input type="text" name="phone"
+                        placeholder="01XXXXXXXXX"
+                        class="w-full border p-3 rounded mb-3 focus:ring-2 focus:ring-orange-400"
+                        required>
+
+                    <button name="send_otp"
+                        class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded">
+                        Send OTP
+                    </button>
+                </form>
+
+            </div>
+
+            <!-- 🔸 RIGHT: NORMAL LOGIN -->
+            <div class="bg-gray-50 p-6 rounded-xl">
+
+                <h3 class="font-semibold mb-3">Login with Credentials</h3>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <input type="text" name="username"
+                        placeholder="Username"
+                        class="w-full border p-3 rounded mb-3 focus:ring-2 focus:ring-orange-400"
+                        required>
+
+                    <input type="password" name="password"
+                        placeholder="Password"
+                        class="w-full border p-3 rounded mb-3 focus:ring-2 focus:ring-orange-400"
+                        required>
+
+                    <div class="flex justify-between text-sm mb-3">
+                        <label>
+                            <input type="checkbox"> Remember me
+                        </label>
+                        <a href="#" class="text-orange-500">Forgot?</a>
+                    </div>
+
+                    <button
+                        class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded">
+                        Login
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Divider -->
+        <div class="text-center my-6 text-gray-400">OR</div>
+
+        <!-- Google (optional UI) -->
+        <div class="text-center">
+            <button class="border px-4 py-2 rounded flex items-center gap-2 mx-auto">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5">
+                Continue with Google
+            </button>
+        </div>
+
+        <!-- Register -->
+        <p class="text-center text-sm mt-6">
+            Don’t have an account?
+            <a href="/register/" class="text-orange-500 font-medium">
+                Register account
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

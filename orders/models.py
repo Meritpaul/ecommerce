@@ -22,9 +22,9 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=8, decimal_places=2)
-    
+
     def __str__(self):
-        return self.product.name
+        return f"{self.product.name} x {self.quantity}"

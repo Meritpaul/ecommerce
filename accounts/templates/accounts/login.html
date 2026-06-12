@@ -1,96 +1,95 @@
 {% extends 'base.html' %}
 
+{% block title %}Login{% endblock %}
+
 {% block content %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-10">
 
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
-
-    <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-4xl">
+    <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 w-full max-w-3xl">
 
         <!-- Title -->
         <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold">🔐 Sign In</h2>
-            <p class="text-gray-500 text-sm">Access your account securely</p>
+            <h1 class="text-2xl font-bold text-gray-800">🔐 Sign In</h1>
+            <p class="text-gray-500 text-sm">Access your PureShop account</p>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-6 items-center">
+        <div class="grid md:grid-cols-2 gap-6">
 
             <!-- 🔹 LEFT: OTP LOGIN -->
             <div class="bg-gray-50 p-6 rounded-xl">
+                <h3 class="font-semibold mb-3 text-gray-700">Login with Mobile Number</h3>
 
-                <h3 class="font-semibold mb-3">Login with Mobile Number</h3>
-
-                <form method="POST" action="/otp-login/">
+                {% if show_otp %}
+                <!-- STEP 2: Verify OTP -->
+                <form method="POST" action="{% url 'otp_login' %}" class="space-y-3">
                     {% csrf_token %}
-
-                    <input type="text" name="phone"
+                    <p class="text-sm text-gray-500">
+                        OTP sent to <span class="font-semibold">{{ phone }}</span>
+                    </p>
+                    <input type="text" name="otp"
+                        placeholder="Enter 6-digit OTP"
+                        maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
+                        class="w-full border p-3 rounded-xl text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        required autofocus>
+                    <button name="verify_otp"
+                        class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-xl font-semibold transition">
+                        Verify & Login
+                    </button>
+                    <a href="{% url 'login' %}" class="block text-center text-xs text-gray-400 hover:text-gray-600">
+                        ← Use a different number
+                    </a>
+                </form>
+                {% else %}
+                <!-- STEP 1: Send OTP -->
+                <form method="POST" action="{% url 'otp_login' %}" class="space-y-3">
+                    {% csrf_token %}
+                    <input type="tel" name="phone"
                         placeholder="01XXXXXXXXX"
-                        class="w-full border p-3 rounded mb-3 focus:ring-2 focus:ring-orange-400"
+                        pattern="01[3-9][0-9]{8}"
+                        maxlength="11" inputmode="numeric"
+                        title="Valid Bangladeshi phone number (e.g., 01812109120)"
+                        class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
                         required>
-
                     <button name="send_otp"
-                        class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded">
+                        class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-xl font-semibold transition">
                         Send OTP
                     </button>
                 </form>
-
+                {% endif %}
             </div>
 
             <!-- 🔸 RIGHT: NORMAL LOGIN -->
             <div class="bg-gray-50 p-6 rounded-xl">
+                <h3 class="font-semibold mb-3 text-gray-700">Login with Credentials</h3>
 
-                <h3 class="font-semibold mb-3">Login with Credentials</h3>
-
-                <form method="POST">
+                <form method="POST" class="space-y-3">
                     {% csrf_token %}
 
                     <input type="text" name="username"
                         placeholder="Username"
-                        class="w-full border p-3 rounded mb-3 focus:ring-2 focus:ring-orange-400"
-                        required>
+                        class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        required autocomplete="username">
 
                     <input type="password" name="password"
                         placeholder="Password"
-                        class="w-full border p-3 rounded mb-3 focus:ring-2 focus:ring-orange-400"
-                        required>
+                        class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        required autocomplete="current-password">
 
-                    <div class="flex justify-between text-sm mb-3">
-                        <label>
-                            <input type="checkbox"> Remember me
-                        </label>
-                        <a href="#" class="text-orange-500">Forgot?</a>
-                    </div>
-
-                    <button
-                        class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded">
+                    <button name="login"
+                        class="w-full bg-orange-500 hover:bg-orange-600 text-white py-2.5 rounded-xl font-semibold transition">
                         Login
                     </button>
                 </form>
-
             </div>
-
-        </div>
-
-        <!-- Divider -->
-        <div class="text-center my-6 text-gray-400">OR</div>
-
-        <!-- Google (optional UI) -->
-        <div class="text-center">
-            <button class="border px-4 py-2 rounded flex items-center gap-2 mx-auto">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5">
-                Continue with Google
-            </button>
         </div>
 
         <!-- Register -->
-        <p class="text-center text-sm mt-6">
-            Don’t have an account?
-            <a href="/register/" class="text-orange-500 font-medium">
-                Register account
+        <p class="text-center text-sm mt-6 text-gray-500">
+            Don't have an account?
+            <a href="{% url 'register' %}" class="text-orange-500 font-semibold hover:underline">
+                Create one
             </a>
         </p>
-
     </div>
-
 </div>
-
 {% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}My Wishlist{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">❤️ My Wishlist</h1>
+
+    {% if items %}
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {% for item in items %}
+        <div class="bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 overflow-hidden transition group relative">
+            <a href="{% url 'product_detail' item.product.id %}" class="block">
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" loading="lazy"
+                    class="w-full h-32 sm:h-40 object-cover group-hover:scale-105 transition duration-300">
+            </a>
+
+            <button onclick="removeWishlist({{ item.product.id }}, this)"
+                    class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center shadow hover:scale-110 transition"
+                    aria-label="Remove from wishlist">
+                ❤️
+            </button>
+
+            <div class="p-3" id="wishlist-item-{{ item.product.id }}">
+                <a href="{% url 'product_detail' item.product.id %}">
+                    <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 min-h-[2.5rem] hover:text-orange-500 transition">
+                        {{ item.product.name }}
+                    </h3>
+                </a>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-base font-bold text-green-600">{{ item.product.price }} TK</span>
+                    {% if item.product.stock > 0 %}
+                    <button onclick="addToCart({{ item.product.id }})"
+                        class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition">
+                        + Cart
+                    </button>
+                    {% else %}
+                    <span class="text-xs text-gray-400 font-semibold">Sold Out</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-20">
+        <div class="text-6xl mb-4">💔</div>
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">Your wishlist is empty</h3>
+        <p class="text-gray-500 mb-6">Save items you love and find them here later.</p>
+        <a href="/" class="bg-orange-500 text-white px-6 py-3 rounded-xl hover:bg-orange-600 transition inline-block">
+            Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function removeWishlist(productId, btn) {
+    fetch(`/wishlist/toggle/${productId}/`, {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.wishlisted) {
+            const card = btn.closest('.group');
+            card.style.transition = 'opacity 0.3s, transform 0.3s';
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            setTimeout(() => card.remove(), 300);
+        }
+    });
+}
+</script>
+{% endblock %}

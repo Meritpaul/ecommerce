@@ -1,150 +1,315 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>PureShop</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}PureShop — Fresh organic products delivered to your door in Dhaka, Bangladesh.{% endblock %}">
+    <meta name="keywords"    content="{% block meta_keywords %}organic food, fresh vegetables, pureshop, dhaka, bangladesh{% endblock %}">
+    <meta name="author"      content="PureShop">
+    <meta name="theme-color" content="#f97316">
+
+    <!-- Open Graph -->
+    <meta property="og:title"       content="{% block og_title %}PureShop{% endblock %} | Fresh Organic Delivery">
+    <meta property="og:description" content="Fresh organic products delivered to your door">
+    <meta property="og:type"        content="website">
+    <meta property="og:locale"      content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"  content="summary_large_image">
+    <meta name="twitter:title" content="PureShop | Fresh Organic Delivery">
+
+    <title>{% block title %}PureShop{% endblock %} | Fresh Organic Delivery</title>
+
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}" onerror="this.remove()">
+
+    <!-- Tailwind CSS (CDN for dev; replace with built output.css in production) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    {% load static %}
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#f97316',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Smooth transitions */
+        * { -webkit-tap-highlight-color: transparent; }
+        .cart-drawer-open  { transform: translateX(0) !important; }
+        .side-menu-open    { transform: translateX(0) !important; }
+        /* Prevent layout shift during font load */
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        /* Line clamp fallback */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50">
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
-<!-- NAVBAR -->
-<nav class="bg-white shadow px-4 py-3 flex items-center justify-between">
+<!-- ═══════════════════════════════════════════
+    NAVBAR
+════════════════════════════════════════════ -->
+<header class="bg-white shadow-sm sticky top-0 z-30">
+<nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
 
+    <!-- Logo + Hamburger -->
     <div class="flex items-center gap-3">
-        <span onclick="toggleMenu()" class="text-2xl cursor-pointer">☰</span>
+        <button onclick="toggleMenu()" aria-label="Open menu"
+            class="text-gray-600 hover:text-orange-500 transition p-1">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
 
-        <a href="/" class="flex items-center gap-2 hover:scale-105 transition duration-200">
-            
-            <div class="bg-orange-500 text-white p-2 rounded-lg font-bold">
-                🌿
-            </div>
-            
-            <span class="text-gray-800 font-semibold text-lg">
+        <a href="/" class="flex items-center gap-2 hover:opacity-80 transition">
+            <div class="bg-orange-500 text-white px-2 py-1 rounded-lg font-bold text-sm">🌿</div>
+            <span class="text-gray-800 font-bold text-lg">
                 Pure<span class="text-orange-500">Shop</span>
             </span>
         </a>
     </div>
 
-    <!-- SEARCH -->
-    <div class="bg-white px-4 py-2 shadow-sm w-1/2 hidden md:block">
-        <form method="GET" class="flex">
-            <input type="text" name="q"
+    <!-- Desktop Search -->
+    <form method="GET" action="/" class="hidden md:flex flex-1 max-w-md">
+        <input type="text" name="q"
                 value="{{ request.GET.q }}"
                 placeholder="Search products..."
-                class="w-full px-4 py-2 border rounded-l-lg focus:outline-none">
-            <button class="bg-orange-500 text-white px-4 rounded-r-lg">🔍</button>
-        </form>
-    </div>
-    
-    <!-- CART -->
-    <div class="relative cursor-pointer" onclick="toggleCart()">
-        🛒
-        <span id="cart-count"
-        class="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 rounded-full">
-        0
-        </span>
-    </div>
+                class="flex-1 px-4 py-2 border border-r-0 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+        <button type="submit"
+            class="bg-orange-500 hover:bg-orange-600 text-white px-4 rounded-r-lg transition">
+            🔍
+        </button>
+    </form>
 
+    <!-- Right: Auth + Cart -->
+    <div class="flex items-center gap-3">
+
+        <!-- Auth state -->
+        {% if user.is_authenticated %}
+        <div class="relative group hidden md:block">
+            <button class="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-orange-500 transition px-2 py-1 rounded-lg hover:bg-orange-50">
+                <span class="w-7 h-7 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-xs font-bold">
+                    {{ user.username|first|upper }}
+                </span>
+                <span class="hidden lg:inline">{{ user.username }}</span>
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+            </button>
+            <!-- Dropdown -->
+            <div class="absolute right-0 top-full mt-1 bg-white border shadow-lg rounded-xl py-2 min-w-[160px] invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200">
+                <a href="/my-orders/" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    📦 My Orders
+                </a>
+                <a href="/wishlist/" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    ❤️ Wishlist
+                </a>
+                <hr class="my-1">
+                <a href="/logout/" class="flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                    🚪 Logout
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <a href="/login/" class="hidden md:inline-flex items-center gap-1 text-sm font-medium text-orange-500 hover:text-orange-600 transition px-3 py-1.5 border border-orange-500 rounded-lg hover:bg-orange-50">
+            Login
+        </a>
+        {% endif %}
+
+        <!-- Cart icon -->
+        <button onclick="toggleCart()" aria-label="Open cart"
+            class="relative p-2 hover:bg-orange-50 rounded-lg transition">
+            <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <span id="cart-count"
+                class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold transition-transform duration-200">
+                0
+            </span>
+        </button>
+    </div>
 </nav>
 
-<!-- SIDE MENU -->
-<div id="overlay"
-    onclick="toggleMenu()"
-    class="fixed inset-0 bg-black opacity-30 hidden z-40"></div>
+<!-- Mobile Search Bar -->
+<div class="md:hidden px-4 pb-2">
+    <form method="GET" action="/" class="flex">
+        <input type="text" name="q"
+                value="{{ request.GET.q }}"
+                placeholder="Search products..."
+                class="flex-1 px-3 py-2 border border-r-0 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+        <button type="submit"
+            class="bg-orange-500 text-white px-3 rounded-r-lg text-sm">🔍</button>
+    </form>
+</div>
+</header>
 
-<div id="sideMenu"
-    class="fixed top-0 left-0 -translate-x-full w-64 h-full bg-white shadow transform transition duration-300 z-50">
 
-    <div class="p-4 border-b font-bold text-lg">Menu</div>
+<!-- ═══════════════════════════════════════════
+    SIDE MENU
+════════════════════════════════════════════ -->
+<div id="overlay" onclick="toggleMenu()"
+    class="fixed inset-0 bg-black bg-opacity-40 hidden z-40 transition-opacity"></div>
 
-    <div class="flex flex-col p-4 gap-3">
-        <a href="/">🏠 Home</a>
-        <a href="/cart/">🛒 Cart</a>
-        <a href="/my-orders/">📦 My Orders</a>
-        <a href="/login/">👤 Login</a>
+<aside id="sideMenu"
+        class="fixed top-0 left-0 -translate-x-full w-72 h-full bg-white shadow-2xl z-50 transition-transform duration-300 flex flex-col">
+
+    <div class="p-5 border-b flex items-center justify-between">
+        <span class="font-bold text-lg">🌿 PureShop</span>
+        <button onclick="toggleMenu()" class="text-gray-400 hover:text-gray-700 p-1">✕</button>
     </div>
 
-</div>
+    <!-- Auth state in side menu -->
+    {% if user.is_authenticated %}
+    <div class="px-5 py-4 bg-orange-50 border-b">
+        <p class="text-sm text-gray-500">Logged in as</p>
+        <p class="font-semibold text-gray-800">{{ user.username }}</p>
+    </div>
+    {% endif %}
 
-<!-- MAIN -->
-<div class="max-w-6xl mx-auto">
+    <nav class="flex flex-col p-4 gap-1 flex-1">
+        <a href="/"          class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 text-gray-700 hover:text-orange-500 transition">🏠 <span>Home</span></a>
+        <a href="/cart/"     class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 text-gray-700 hover:text-orange-500 transition">🛒 <span>Cart</span></a>
+        <a href="/my-orders/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 text-gray-700 hover:text-orange-500 transition">📦 <span>My Orders</span></a>
+        <a href="/wishlist/" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-orange-50 text-gray-700 hover:text-orange-500 transition">❤️ <span>Wishlist</span></a>
+
+        <!-- Categories -->
+        <div class="mt-3 mb-1 px-3 text-xs text-gray-400 font-semibold uppercase tracking-wider">Categories</div>
+        {% for cat in categories %}
+        <a href="/?category={{ cat.id }}"
+            class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-orange-50 text-gray-600 hover:text-orange-500 transition text-sm">
+            {% if cat.image %}<img src="{{ cat.image.url }}" class="w-5 h-5 rounded-full object-cover">{% else %}🌿{% endif %}
+            {{ cat.name }}
+        </a>
+        {% endfor %}
+    </nav>
+
+    <div class="p-4 border-t">
+        {% if user.is_authenticated %}
+        <a href="/logout/" class="flex items-center gap-2 px-3 py-2 text-red-500 hover:bg-red-50 rounded-xl transition text-sm">
+            🚪 Logout
+        </a>
+        {% else %}
+        <a href="/login/" class="block text-center bg-orange-500 text-white py-2.5 rounded-xl hover:bg-orange-600 transition font-medium">
+            Login / Register
+        </a>
+        {% endif %}
+    </div>
+</aside>
+
+
+<!-- ═══════════════════════════════════════════
+    FLASH MESSAGES
+════════════════════════════════════════════ -->
+{% if messages %}
+<div id="flash-messages" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm">
+    {% for message in messages %}
+    <div class="flex items-start gap-3 px-4 py-3 rounded-xl shadow-lg text-sm font-medium
+        {% if message.tags == 'error' %}bg-red-500 text-white
+        {% elif message.tags == 'success' %}bg-green-500 text-white
+        {% elif message.tags == 'warning' %}bg-yellow-400 text-yellow-900
+        {% else %}bg-blue-500 text-white{% endif %}">
+        <span>{{ message }}</span>
+        <button onclick="this.parentElement.remove()" class="ml-auto opacity-70 hover:opacity-100 text-lg leading-none">×</button>
+    </div>
+    {% endfor %}
+</div>
+<script>setTimeout(() => { const el = document.getElementById('flash-messages'); if(el) el.style.opacity = '0'; }, 4000);</script>
+{% endif %}
+
+
+<!-- ═══════════════════════════════════════════
+    MAIN CONTENT
+════════════════════════════════════════════ -->
+<main class="flex-1 max-w-6xl mx-auto w-full">
     {% block content %}{% endblock %}
-</div>
+</main>
 
-<!-- CART DRAWER -->
+
+<!-- ═══════════════════════════════════════════
+    CART DRAWER
+════════════════════════════════════════════ -->
 <div id="cart-overlay"
     class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"
     onclick="toggleCart()"></div>
 
 <div id="cart-drawer"
-    class="fixed top-0 right-0 w-96 h-full bg-white shadow-lg transform translate-x-full transition duration-300 z-50">
+    class="fixed top-0 right-0 w-full sm:w-96 h-full bg-white shadow-2xl translate-x-full transition-transform duration-300 z-50 flex flex-col">
 
-    <div class="flex justify-between items-center p-4 border-b">
-        <h2 class="text-xl font-bold">Shopping Cart</h2>
-        <button onclick="toggleCart()" class="text-red-500">✕</button>
+    <div class="flex justify-between items-center p-5 border-b">
+        <h2 class="text-xl font-bold">🛒 Cart</h2>
+        <button onclick="toggleCart()" class="text-gray-400 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 transition">✕</button>
     </div>
 
-    <div id="cart-items" class="p-4 overflow-y-auto h-[70%]"></div>
+    <div id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
 
-    <div class="absolute bottom-0 w-full p-4 border-t bg-white">
-        <div class="flex justify-between font-bold text-lg">
-            <span>Total:</span>
+    <div class="p-5 border-t bg-white">
+        <div class="flex justify-between font-semibold text-gray-700 mb-1">
+            <span>Subtotal</span>
             <span id="grand-total">0 TK</span>
         </div>
-
+        <p class="text-xs text-gray-400 mb-3">Delivery fee calculated at checkout</p>
         <a href="/checkout/"
-            class="block text-center w-full bg-orange-500 text-white py-2 mt-2 rounded">
-            Checkout
+            class="block text-center w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition">
+            Proceed to Checkout →
         </a>
-    </div>
-
-</div>
-
-<!-- FLOATING CART -->
-<div class="fixed right-4 top-1/3 z-50">
-    <div onclick="toggleCart()"
-        class="bg-orange-500 text-white px-4 py-3 rounded-xl shadow-lg cursor-pointer hover:scale-105 transition">
-
-        <div class="text-center">
-            <div class="text-sm">🛒 <span id="floating-count">0</span> Items</div>
-            <div class="font-bold" id="floating-total">0 TK</div>
-        </div>
-
+        <button onclick="toggleCart()"
+            class="block w-full text-center text-sm text-gray-500 mt-2 hover:text-gray-700 transition">
+            Continue Shopping
+        </button>
     </div>
 </div>
 
-<!-- CHAT -->
-<div class="fixed bottom-5 right-5 z-50">
-    <div onclick="openChat()"
-        class="bg-orange-500 text-white p-4 rounded-full shadow-lg cursor-pointer hover:scale-110 transition">
-        💬
-    </div>
-</div>
 
-<!-- 🔥 FOOTER -->
-<footer class="bg-gray-900 text-gray-300 mt-10">
+<!-- ═══════════════════════════════════════════
+    WHATSAPP CHAT BUTTON
+════════════════════════════════════════════ -->
+<a href="https://wa.me/8801812109120?text=Hi%20PureShop%2C%20I%20need%20help!"
+    target="_blank" rel="noopener"
+    class="fixed bottom-6 right-5 z-40 bg-green-500 hover:bg-green-600 text-white p-3.5 rounded-full shadow-lg hover:scale-110 transition"
+    title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+</a>
 
-    <div class="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-4 gap-8">
 
-        <!-- BRAND -->
+<!-- ═══════════════════════════════════════════
+    FOOTER
+════════════════════════════════════════════ -->
+<footer class="bg-gray-900 text-gray-400 mt-12">
+    <div class="max-w-6xl mx-auto px-6 py-12 grid sm:grid-cols-2 md:grid-cols-4 gap-8">
+
+        <!-- Brand -->
         <div>
-            <h2 class="text-xl font-bold text-white mb-3">
-                🌿 PureShop
-            </h2>
-            <p class="text-sm">
-                Fresh organic products delivered to your door. Quality + Trust 💚
+            <h2 class="text-xl font-bold text-white mb-3">🌿 PureShop</h2>
+            <p class="text-sm leading-relaxed">
+                Fresh organic products delivered to your door. Quality you can trust 💚
             </p>
+            <div class="flex gap-3 mt-4">
+                <a href="#" class="w-8 h-8 bg-gray-700 hover:bg-orange-500 rounded-full flex items-center justify-center transition text-xs" title="Facebook">f</a>
+                <a href="#" class="w-8 h-8 bg-gray-700 hover:bg-orange-500 rounded-full flex items-center justify-center transition text-xs" title="Instagram">ig</a>
+            </div>
         </div>
 
-        <!-- CATEGORIES (DYNAMIC) -->
+        <!-- Categories -->
         <div>
-            <h3 class="text-white font-semibold mb-3">Categories</h3>
-
+            <h3 class="text-white font-semibold mb-4">Categories</h3>
             <ul class="space-y-2 text-sm">
                 {% for cat in categories|slice:":6" %}
                 <li>
-                    <a href="/?category={{ cat.id }}" class="hover:text-orange-400">
+                    <a href="/?category={{ cat.id }}" class="hover:text-orange-400 transition">
                         {{ cat.name }}
                     </a>
                 </li>
@@ -152,158 +317,166 @@
             </ul>
         </div>
 
-        <!-- QUICK LINKS -->
+        <!-- Quick Links -->
         <div>
-            <h3 class="text-white font-semibold mb-3">Quick Links</h3>
-
+            <h3 class="text-white font-semibold mb-4">Quick Links</h3>
             <ul class="space-y-2 text-sm">
-                <li><a href="/" class="hover:text-orange-400">Home</a></li>
-                <li><a href="/cart/" class="hover:text-orange-400">Cart</a></li>
-                <li><a href="/my-orders/" class="hover:text-orange-400">My Orders</a></li>
-                <li><a href="/login/" class="hover:text-orange-400">Login</a></li>
+                <li><a href="/"          class="hover:text-orange-400 transition">Home</a></li>
+                <li><a href="/cart/"     class="hover:text-orange-400 transition">Cart</a></li>
+                <li><a href="/my-orders/" class="hover:text-orange-400 transition">My Orders</a></li>
+                <li><a href="/wishlist/" class="hover:text-orange-400 transition">Wishlist</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="/logout/"   class="hover:text-orange-400 transition">Logout</a></li>
+                {% else %}
+                <li><a href="/login/"    class="hover:text-orange-400 transition">Login</a></li>
+                <li><a href="/register/" class="hover:text-orange-400 transition">Register</a></li>
+                {% endif %}
             </ul>
         </div>
 
-        <!-- CONTACT -->
+        <!-- Contact -->
         <div>
-            <h3 class="text-white font-semibold mb-3">Contact</h3>
-
-            <p class="text-sm">📍 Uttara, Dhaka, Bangladesh</p>
-            <p class="text-sm">📞 +880 1812-10912</p>
-            <p class="text-sm">✉ support@pureshop.com</p>
+            <h3 class="text-white font-semibold mb-4">Contact Us</h3>
+            <ul class="space-y-2 text-sm">
+                <li class="flex items-start gap-2">📍 <span>Uttara, Dhaka, Bangladesh</span></li>
+                <li class="flex items-center gap-2">📞 <a href="tel:+8801812109120" class="hover:text-orange-400 transition">+880 1812-109120</a></li>
+                <li class="flex items-center gap-2">✉ <a href="mailto:support@pureshop.com" class="hover:text-orange-400 transition">support@pureshop.com</a></li>
+            </ul>
         </div>
-
     </div>
 
-    <!-- BOTTOM BAR -->
-    <div class="border-t border-gray-700 text-center py-4 text-sm">
-
-        © <span id="year"></span> PureShop. All rights reserved.
-
+    <div class="border-t border-gray-800 text-center py-4 text-xs text-gray-500">
+        {% now "Y" as current_year %}
+        © {{ current_year }} PureShop. All rights reserved.
+        &nbsp;|&nbsp; <a href="/robots.txt" class="hover:text-gray-400">Robots</a>
+        &nbsp;|&nbsp; <a href="/sitemap.xml" class="hover:text-gray-400">Sitemap</a>
     </div>
-
 </footer>
 
-<!-- JS -->
+
+<!-- ═══════════════════════════════════════════
+    JAVASCRIPT
+════════════════════════════════════════════ -->
 <script>
-
+// ── Side Menu ──────────────────────────────
 function toggleMenu() {
-    document.getElementById("sideMenu").classList.toggle("-translate-x-full");
-    document.getElementById("overlay").classList.toggle("hidden");
+    document.getElementById('sideMenu').classList.toggle('-translate-x-full');
+    document.getElementById('overlay').classList.toggle('hidden');
 }
 
-function openChat() {
-    alert("Chat coming soon 😄");
-}
+// ── Cart Drawer ────────────────────────────
+window.toggleCart = function() {
+    const drawer  = document.getElementById('cart-drawer');
+    const overlay = document.getElementById('cart-overlay');
+    const isOpen  = !drawer.classList.contains('translate-x-full');
 
-document.addEventListener("DOMContentLoaded", function () {
-
-    const cartCount = document.getElementById('cart-count');
-    const grandTotal = document.getElementById('grand-total');
-
-    window.toggleCart = function () {
-        document.getElementById('cart-drawer').classList.toggle('translate-x-full');
-        document.getElementById('cart-overlay').classList.toggle('hidden');
+    if (isOpen) {
+        drawer.classList.add('translate-x-full');
+        overlay.classList.add('hidden');
+    } else {
+        drawer.classList.remove('translate-x-full');
+        overlay.classList.remove('hidden');
         loadCart();
-    };
+    }
+};
 
-    window.loadCart = function() {
-        fetch('/cart/api/')
-        .then(res => res.json())
+// ── Load Cart Items ────────────────────────
+window.loadCart = function() {
+    fetch('/cart/api/')
+        .then(r => r.json())
         .then(data => {
+            const container = document.getElementById('cart-items');
+            const countEl   = document.getElementById('cart-count');
+            const totalEl   = document.getElementById('grand-total');
 
-            let container = document.getElementById('cart-items');
-            container.innerHTML = '';
+            // Update counts
+            countEl.textContent = data.total_quantity;
+            totalEl.textContent = data.total_price + ' TK';
+
+            // Animate badge
+            countEl.classList.add('scale-125');
+            setTimeout(() => countEl.classList.remove('scale-125'), 200);
 
             if (data.items.length === 0) {
-                container.innerHTML = "<p class='text-gray-500'>Cart is empty</p>";
-                grandTotal.innerText = "0 TK";
-                cartCount.innerText = "0";
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-48 text-gray-400">
+                        <div class="text-5xl mb-3">🛒</div>
+                        <p class="font-medium">Your cart is empty</p>
+                        <button onclick="toggleCart()" class="mt-3 text-orange-500 text-sm hover:underline">
+                            Browse products →
+                        </button>
+                    </div>`;
                 return;
             }
 
-            data.items.forEach(item => {
-                container.innerHTML += `
-                    <div class="flex items-center justify-between border-b py-2">
-
-                        <div>
-                            <p class="font-semibold">${item.name}</p>
-                            <p class="text-sm text-gray-500">${item.price} TK</p>
+            container.innerHTML = data.items.map(item => `
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <img src="${item.image}" alt="${item.name}"
+                        class="w-14 h-14 object-cover rounded-lg flex-shrink-0"
+                        onerror="this.style.display='none'">
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-sm text-gray-800 truncate">${item.name}</p>
+                        <p class="text-xs text-gray-500">${item.price} TK each</p>
+                        <div class="flex items-center gap-2 mt-1.5">
+                            <button class="cart-btn w-6 h-6 bg-white border rounded-full text-sm font-bold hover:bg-orange-50 hover:border-orange-400 transition"
+                                    data-action="decrease" data-product-id="${item.id}">−</button>
+                            <span class="text-sm font-semibold w-5 text-center">${item.quantity}</span>
+                            <button class="cart-btn w-6 h-6 bg-white border rounded-full text-sm font-bold hover:bg-orange-50 hover:border-orange-400 transition"
+                                    data-action="increase" data-product-id="${item.id}">+</button>
                         </div>
-
-                        <div class="flex items-center gap-2">
-                            <button class="cart-btn bg-gray-200 px-2" data-action="decrease" data-product-id="${item.id}">−</button>
-                            <span>${item.quantity}</span>
-                            <button class="cart-btn bg-gray-200 px-2" data-action="increase" data-product-id="${item.id}">+</button>
-                        </div>
-
-                        <div class="text-right">
-                            <div class="text-green-600 font-bold">${item.total} TK</div>
-
-                            <button class="cart-btn text-red-500 text-xs"
-                                data-action="remove"
-                                data-product-id="${item.id}">
-                                Remove
-                            </button>
-                        </div>
-
                     </div>
-                `;
-            });
+                    <div class="text-right flex-shrink-0">
+                        <p class="font-bold text-green-600 text-sm">${item.total} TK</p>
+                        <button class="cart-btn text-xs text-red-400 hover:text-red-600 transition mt-1"
+                                data-action="remove" data-product-id="${item.id}">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(() => {});
+};
 
-            grandTotal.innerText = data.total_price + " TK";
-            cartCount.innerText = data.total_quantity;
-
-            document.getElementById('floating-count').innerText = data.total_quantity;
-            document.getElementById('floating-total').innerText = data.total_price + " TK";
-        });
-    };
-
-    function updateUI(data) {
-        cartCount.innerText = data.total_quantity;
-        grandTotal.innerText = data.total_price + " TK";
-
-        document.getElementById('floating-count').innerText = data.total_quantity;
-        document.getElementById('floating-total').innerText = data.total_price + " TK";
-
-        cartCount.classList.add("scale-125");
-        setTimeout(() => {
-            cartCount.classList.remove("scale-125");
-        }, 200);
-    }
-
-    // ✅ ADD TO CART
-    window.addToCart = function(id) {
-        fetch(`/cart/add/${id}/`)
-        .then(res => res.json())
+// ── Add to Cart ────────────────────────────
+window.addToCart = function(id) {
+    fetch(`/cart/add/${id}/`)
+        .then(r => r.json())
         .then(data => {
-            updateUI(data);
-            loadCart();
+            document.getElementById('cart-count').textContent = data.total_quantity;
+            document.getElementById('grand-total').textContent = data.total_price + ' TK';
+            toggleCart();
         });
-    };
+};
 
-    // ✅ HANDLE BUTTONS
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('cart-btn')) {
+// ── Cart Buttons (increase / decrease / remove) ─
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.cart-btn');
+    if (!btn) return;
 
-            let action = e.target.dataset.action;
-            let id = e.target.dataset.productId;
+    const action = btn.dataset.action;
+    const id     = btn.dataset.productId;
+    if (!action || !id) return;
 
-            fetch(`/cart/${action}/${id}/`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    updateUI(data);
-                    loadCart();
-                }
-            });
-        }
-    });
-
+    fetch(`/cart/${action}/${id}/`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('cart-count').textContent = data.total_quantity;
+                document.getElementById('grand-total').textContent = data.total_price + ' TK';
+                loadCart();
+            }
+        });
 });
-</script>
-<script>
-    document.getElementById("year").innerText = new Date().getFullYear();
+
+// ── Init cart count on page load ──────────
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/cart/api/')
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('cart-count').textContent = data.total_quantity;
+            document.getElementById('grand-total').textContent = data.total_price + ' TK';
+        })
+        .catch(() => {});
+});
 </script>
 
 </body>

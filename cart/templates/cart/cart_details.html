@@ -1,73 +1,134 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<h2 class="text-2xl font-bold mb-4">Your Cart</h2>
+{% block title %}Your Cart{% endblock %}
 
-<div class="bg-white p-4 rounded shadow">
-    {% for item in cart %}
-    
-    <div id="item-{{ item.product.id }}"
-        class="flex gap-3 border-b py-3 items-center"
-        data-price="{{ item.product.price }}">
-        
-        <!-- Image -->
-        <img src="{{ item.product.image.url }}"
-            class="w-16 h-16 object-cover rounded">
-            
-        <!-- Info -->
-        <div class="flex-1">
-            <h3 class="text-sm font-semibold">{{ item.product.name }}</h3>
-            <p class="text-gray-500 text-sm">{{ item.product.price }} TK</p>
-            
-            <!-- Quantity Controls -->
-            <div class="flex items-center gap-2 mt-2">
-                
-                <button data-action="decrease"
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">🛒 Your Cart</h1>
+
+    {% if cart %}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y">
+        {% for item in cart %}
+        <div id="item-{{ item.product.id }}"
+            class="flex gap-4 p-4 items-center"
+            data-price="{{ item.product.price }}">
+
+            <!-- Image -->
+            <a href="{% url 'product_detail' item.product.id %}" class="flex-shrink-0">
+                <img src="{{ item.product.image.url }}"
+                    alt="{{ item.product.name }}"
+                    class="w-20 h-20 object-cover rounded-xl">
+            </a>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+                <a href="{% url 'product_detail' item.product.id %}">
+                    <h3 class="text-sm font-semibold text-gray-800 hover:text-orange-500 transition truncate">
+                        {{ item.product.name }}
+                    </h3>
+                </a>
+                <p class="text-gray-500 text-sm mt-0.5">{{ item.product.price }} TK each</p>
+
+                <!-- Quantity Controls -->
+                <div class="flex items-center gap-2 mt-2">
+                    <button data-action="decrease"
+                            data-product-id="{{ item.product.id }}"
+                            class="cart-btn w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-orange-50 rounded-full font-bold transition">
+                        −
+                    </button>
+                    <span id="qty-{{ item.product.id }}" class="px-2 font-semibold text-sm w-6 text-center">
+                        {{ item.quantity }}
+                    </span>
+                    <button data-action="increase"
+                            data-product-id="{{ item.product.id }}"
+                            class="cart-btn w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-orange-50 rounded-full font-bold transition">
+                        +
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right side -->
+            <div class="text-right flex-shrink-0">
+                <p id="total-{{ item.product.id }}"
+                    class="item-total text-green-600 font-bold">
+                    {{ item.total_price }} TK
+                </p>
+                <button data-action="remove"
                         data-product-id="{{ item.product.id }}"
-                        class="cart-btn w-7 h-7 flex items-center justify-center bg-gray-200 rounded">
-                    −
-                </button>
-                
-                <span id="qty-{{ item.product.id }}" class="px-2">
-                    {{ item.quantity }}
-                </span>
-                
-                <button data-action="increase"
-                        data-product-id="{{ item.product.id }}"
-                        class="cart-btn w-7 h-7 flex items-center justify-center bg-gray-200 rounded">
-                    +
+                        class="cart-btn text-red-500 hover:text-red-700 text-xs mt-2 transition">
+                    🗑 Remove
                 </button>
             </div>
         </div>
-        
-        <!-- Right side -->
-        <div class="text-right">
-            
-            <p id="total-{{ item.product.id }}"
-                class="item-total text-green-600 font-bold">
-                {{ item.total_price }} TK
-            </p>
-            
-            <button data-action="remove"
-                    data-product-id="{{ item.product.id }}"
-                    class="cart-btn text-red-500 text-xs mt-1">
-                Remove
-            </button>
+        {% endfor %}
+    </div>
+
+    <!-- Total + Checkout -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mt-4 p-5">
+        <div class="flex justify-between text-lg font-bold mb-4">
+            <span>Subtotal:</span>
+            <span id="grand-total" class="text-green-600">{{ cart.get_total_price }} TK</span>
+        </div>
+        <p class="text-xs text-gray-400 mb-4">Delivery fee will be calculated at checkout (Free above 500 TK)</p>
+        <div class="flex gap-3">
+            <a href="/"
+                class="flex-1 text-center border border-gray-200 text-gray-600 py-3 rounded-xl hover:bg-gray-50 transition font-medium">
+                ← Continue Shopping
+            </a>
+            <a href="/checkout/"
+                class="flex-1 text-center bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition">
+                Checkout →
+            </a>
         </div>
     </div>
 
-{% endfor %}
-
-    <div class="flex justify-between mt-4 text-xl font-bold">
-        <span>Total:</span>
-        <span id="grand-total" class="text-green-600">
-            {{ cart.get_total_price }} TK
-        </span>
+    {% else %}
+    <!-- Empty cart state -->
+    <div class="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div class="text-6xl mb-4">🛒</div>
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">Your cart is empty</h3>
+        <p class="text-gray-500 mb-6">Add some fresh products to get started</p>
+        <a href="/" class="bg-orange-500 text-white px-6 py-3 rounded-xl hover:bg-orange-600 transition inline-block font-semibold">
+            Continue Shopping
+        </a>
     </div>
-
-    {% if not cart %}
-    <p class="text-center text-gray-500 mt-10">Your cart is empty 🛒</p>
     {% endif %}
-    
 </div>
+
+<script>
+// Update this page's totals when cart-btn is clicked (overrides global handler's loadCart for drawer only)
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.cart-btn');
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    const id     = btn.dataset.productId;
+
+    fetch(`/cart/${action}/${id}/`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+
+            const row   = document.getElementById(`item-${id}`);
+            const price = parseFloat(row.dataset.price);
+
+            if (action === 'remove' || (action === 'decrease' && document.getElementById(`qty-${id}`).textContent.trim() === '1')) {
+                row.style.transition = 'opacity 0.25s';
+                row.style.opacity = '0';
+                setTimeout(() => {
+                    row.remove();
+                    if (data.total_quantity === 0) location.reload();
+                }, 250);
+            } else {
+                const qtyEl = document.getElementById(`qty-${id}`);
+                let qty = parseInt(qtyEl.textContent.trim());
+                qty = action === 'increase' ? qty + 1 : qty - 1;
+                qtyEl.textContent = qty;
+                document.getElementById(`total-${id}`).textContent = (price * qty).toFixed(2) + ' TK';
+            }
+
+            document.getElementById('grand-total').textContent = data.total_price.toFixed(2) + ' TK';
+        });
+});
+</script>
 {% endblock %}

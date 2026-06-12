@@ -1,26 +1,54 @@
 {% extends 'base.html' %}
 
+{% block title %}Order Confirmed{% endblock %}
+
 {% block content %}
+<div class="max-w-xl mx-auto px-4 py-10 text-center">
 
-<div class="max-w-xl mx-auto p-10 text-center">
+    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
 
-    <div class="bg-white p-8 rounded-xl shadow">
+        <div class="text-6xl mb-4">🎉</div>
 
-        <h2 class="text-2xl font-bold text-green-600 mb-4">
-            🎉 Order Placed Successfully!
-        </h2>
+        <h1 class="text-2xl font-bold text-green-600 mb-2">
+            Order Placed Successfully!
+        </h1>
 
         <p class="text-gray-600 mb-6">
-            Thank you for your order. We will contact you soon.
+            Thank you{% if order %}, {{ order.name }}{% endif %}! We've received your order
+            and will contact you soon for delivery.
         </p>
 
-        <a href="/"
-            class="bg-orange-500 text-white px-6 py-2 rounded">
-            Continue Shopping
-        </a>
+        {% if order %}
+        <div class="bg-gray-50 rounded-xl p-4 text-left text-sm space-y-2 mb-6">
+            <div class="flex justify-between">
+                <span class="text-gray-500">Order ID</span>
+                <span class="font-semibold">#{{ order.id }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Total Amount</span>
+                <span class="font-bold text-green-600">{{ order.total_price }} TK</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Status</span>
+                <span class="font-semibold capitalize">{{ order.status }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Delivery Address</span>
+                <span class="font-semibold text-right max-w-[60%]">{{ order.address }}</span>
+            </div>
+        </div>
+        {% endif %}
 
+        <div class="flex gap-3">
+            <a href="/"
+                class="flex-1 border border-gray-200 text-gray-600 py-3 rounded-xl hover:bg-gray-50 transition font-medium">
+                Continue Shopping
+            </a>
+            <a href="/my-orders/"
+                class="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition">
+                View My Orders
+            </a>
+        </div>
     </div>
-
 </div>
-
 {% endblock %}

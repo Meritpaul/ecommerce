@@ -1,46 +1,62 @@
 {% extends 'base.html' %}
 
+{% block title %}Create Account{% endblock %}
+
 {% block content %}
+<div class="min-h-[80vh] flex items-center justify-center px-4 py-10">
 
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-md">
 
-<div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">
+            Create Account
+        </h1>
+        <p class="text-center text-gray-500 text-sm mb-6">
+            Join PureShop and start shopping fresh 🌿
+        </p>
 
-    <h2 class="text-2xl font-bold text-center mb-6">
-        Create Account
-    </h2>
+        <form method="POST" class="space-y-3">
+            {% csrf_token %}
 
-    {% if messages %}
-        {% for message in messages %}
-            <p class="text-red-500 text-sm text-center mb-2">{{ message }}</p>
-        {% endfor %}
-    {% endif %}
+            <input type="text" name="username" placeholder="Username"
+                value="{{ form_data.username|default:'' }}"
+                class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
+                minlength="3" required autocomplete="username">
 
-    <form method="POST" class="space-y-3">
-        {% csrf_token %}
+            <input type="email" name="email" placeholder="Email"
+                value="{{ form_data.email|default:'' }}"
+                class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
+                required autocomplete="email">
 
-        <input type="text" name="username" placeholder="Username"
-            class="w-full border p-3 rounded">
+            <input type="tel" name="phone" placeholder="01XXXXXXXXX"
+                value="{{ form_data.phone|default:'' }}"
+                pattern="01[3-9][0-9]{8}"
+                maxlength="11" inputmode="numeric"
+                title="Valid Bangladeshi phone number (e.g., 01812109120)"
+                class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400
+                        invalid:border-red-400 invalid:focus:ring-red-400"
+                required>
 
-        <input type="email" name="email" placeholder="Email"
-            class="w-full border p-3 rounded">
+            <input type="password" name="password1" placeholder="Password (min 8 characters)"
+                minlength="8"
+                class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
+                required autocomplete="new-password">
 
-        <input type="text" name="phone" placeholder="Phone"
-            class="w-full border p-3 rounded">
+            <input type="password" name="password2" placeholder="Confirm Password"
+                minlength="8"
+                class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
+                required autocomplete="new-password">
 
-        <input type="password" name="password1" placeholder="Password"
-            class="w-full border p-3 rounded">
+            <button class="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition">
+                Register
+            </button>
+        </form>
 
-        <input type="password" name="password2" placeholder="Confirm Password"
-            class="w-full border p-3 rounded">
-
-        <button class="w-full bg-orange-500 text-white py-2 rounded">
-            Register
-        </button>
-    </form>
-
+        <p class="text-center text-sm mt-6 text-gray-500">
+            Already have an account?
+            <a href="{% url 'login' %}" class="text-orange-500 font-semibold hover:underline">
+                Sign in
+            </a>
+        </p>
+    </div>
 </div>
-
-</div>
-
 {% endblock %}

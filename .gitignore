@@ -1,0 +1,38 @@
+# Environment
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+logs/
+*.log
+
+# Media uploads (don't commit user data)
+media/products/
+media/categories/
+media/banners/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Node (Tailwind build)
+node_modules/

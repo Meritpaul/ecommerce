@@ -1,108 +1,164 @@
+import secrets
+import logging
+from datetime import timedelta
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-import random
+from django.utils import timezone
 
-# =========================
-# 🔐 LOGIN (USERNAME/PASSWORD)
-# =========================
+from .models import UserProfile
+
+logger = logging.getLogger(__name__)
+
+
+# ─────────────────────────────────────────────
+# LOGIN (username / password)
+# ─────────────────────────────────────────────
 def user_login(request):
+    if request.user.is_authenticated:
+        return redirect('product_list')
+
     if request.method == 'POST' and 'login' in request.POST:
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
 
         user = authenticate(request, username=username, password=password)
-
         if user:
             login(request, user)
-            return redirect('product_list')
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
         else:
-            messages.error(request, "Invalid credentials")
-            return redirect('login')
+            messages.error(request, 'Invalid username or password.')
 
     return render(request, 'accounts/login.html')
 
 
-# =========================
-# 📱 OTP LOGIN
-# =========================
+# ─────────────────────────────────────────────
+# OTP LOGIN (phone number)
+# ─────────────────────────────────────────────
 def otp_login(request):
-
-    # SEND OTP
+    # Step 1 — send OTP
     if request.method == 'POST' and 'send_otp' in request.POST:
-        phone = request.POST.get('phone')
+        phone = request.POST.get('phone', '').strip()
 
-        otp = str(random.randint(1000, 9999))
+        # Basic validation
+        if not phone or len(phone) != 11 or not phone.isdigit():
+            messages.error(request, 'Please enter a valid 11-digit phone number.')
+            return redirect('login')
 
-        request.session['otp'] = otp
-        request.session['phone'] = phone
+        otp    = str(secrets.randbelow(900000) + 100000)   # 6-digit secure OTP
+        expiry = (timezone.now() + timedelta(minutes=5)).isoformat()
 
-        print("OTP:", otp)  # ⚠️ check terminal
+        request.session['otp']        = otp
+        request.session['otp_expiry'] = expiry
+        request.session['otp_phone']  = phone
 
+        # ── Send real SMS here ───────────────────────────────────────
+        # from your_sms_module import send_sms
+        # send_sms(phone, f"Your PureShop OTP: {otp}. Valid for 5 minutes.")
+        # ────────────────────────────────────────────────────────────
+
+        # Dev only — remove in production
+        logger.info('DEV OTP for %s: %s', phone, otp)
+
+        messages.success(request, f'OTP sent to {phone}. (Check terminal in dev mode)')
         return render(request, 'accounts/login.html', {
             'show_otp': True,
-            'phone': phone
+            'phone': phone,
         })
 
-    # VERIFY OTP
+    # Step 2 — verify OTP
     if request.method == 'POST' and 'verify_otp' in request.POST:
-        entered = request.POST.get('otp')
-        saved = request.session.get('otp')
-        phone = request.session.get('phone')
+        entered = request.POST.get('otp', '').strip()
+        saved   = request.session.get('otp')
+        expiry  = request.session.get('otp_expiry')
+        phone   = request.session.get('otp_phone')
 
-        if entered == saved:
-            user, created = User.objects.get_or_create(username=phone)
-            login(request, user)
-            return redirect('product_list')
-        else:
-            messages.error(request, "Invalid OTP")
+        if not (saved and expiry and phone):
+            messages.error(request, 'Session expired. Please try again.')
             return redirect('login')
+
+        if timezone.now().isoformat() > expiry:
+            messages.error(request, 'OTP expired. Please request a new one.')
+            return redirect('login')
+
+        if entered != saved:
+            messages.error(request, 'Invalid OTP. Please try again.')
+            return render(request, 'accounts/login.html', {
+                'show_otp': True,
+                'phone': phone,
+            })
+
+        # OTP valid — log in (or create) user
+        user, created = User.objects.get_or_create(username=phone)
+        if created:
+            user.set_unusable_password()
+            user.save()
+            UserProfile.objects.get_or_create(user=user, defaults={'phone': phone})
+
+        login(request, user)
+
+        # Clean up session
+        for key in ('otp', 'otp_expiry', 'otp_phone'):
+            request.session.pop(key, None)
+
+        return redirect('product_list')
 
     return redirect('login')
 
 
-# =========================
-# 📝 REGISTER
-# =========================
+# ─────────────────────────────────────────────
+# REGISTER
+# ─────────────────────────────────────────────
 def register(request):
+    if request.user.is_authenticated:
+        return redirect('product_list')
+
     if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
+        username  = request.POST.get('username', '').strip()
+        email     = request.POST.get('email', '').strip()
+        phone     = request.POST.get('phone', '').strip()
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
 
+        # Validation
+        errors = []
         if password1 != password2:
-            messages.error(request, "Passwords do not match")
-            return redirect('register')
-
+            errors.append('Passwords do not match.')
+        if len(password1) < 8:
+            errors.append('Password must be at least 8 characters.')
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists")
-            return redirect('register')
-
+            errors.append('Username already taken.')
         if email and User.objects.filter(email=email).exists():
-            messages.error(request, "Email already exists")
-            return redirect('register')
+            errors.append('An account with this email already exists.')
+
+        if errors:
+            for err in errors:
+                messages.error(request, err)
+            return render(request, 'accounts/register.html', {
+                'form_data': {'username': username, 'email': email, 'phone': phone}
+            })
 
         user = User.objects.create_user(
             username=username,
             email=email,
-            password=password1
+            password=password1,
         )
-
-        user.first_name = phone  # store phone
-        user.save()
+        # Save phone in UserProfile (NOT in first_name)
+        UserProfile.objects.filter(user=user).update(phone=phone)
 
         login(request, user)
+        messages.success(request, f'Welcome to PureShop, {username}! 🎉')
         return redirect('product_list')
 
     return render(request, 'accounts/register.html')
 
 
-# =========================
-# 🚪 LOGOUT
-# =========================
+# ─────────────────────────────────────────────
+# LOGOUT
+# ─────────────────────────────────────────────
 def user_logout(request):
     logout(request)
     return redirect('login')

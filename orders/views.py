@@ -25,9 +25,10 @@ def checkout(request):
         return redirect('product_list')
 
     subtotal = cart.get_total_price()
-    delivery = 60 if subtotal < 500 else 0
+    threshold = settings.FREE_DELIVERY_THRESHOLD
+    delivery = settings.DELIVERY_CHARGE if subtotal < threshold else 0
     total    = subtotal + delivery
-    remaining_for_free = max(0, 500 - subtotal)
+    remaining_for_free = max(0, threshold - subtotal)
 
     if request.method == 'POST':
         name    = request.POST.get('name', '').strip()

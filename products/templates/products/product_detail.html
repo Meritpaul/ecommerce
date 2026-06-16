@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load product_extras %}
 
 {% block title %}{{ product.name }}{% endblock %}
 {% block meta_description %}{{ product.description|truncatewords:25|default:"Fresh organic product from PureShop." }}{% endblock %}
@@ -20,8 +21,14 @@
         <!-- Image -->
         <div class="relative">
             <img src="{{ product.image.url }}"
-                alt="{{ product.name }}"
-                class="w-full rounded-2xl shadow object-cover aspect-square">
+                 alt="{{ product.name }}"
+                 class="w-full rounded-2xl shadow object-cover aspect-square">
+
+            {% if product.created_at|is_new %}
+            <span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                ✨ New
+            </span>
+            {% endif %}
 
             {% if product.stock == 0 %}
             <div class="absolute inset-0 bg-black bg-opacity-50 rounded-2xl flex items-center justify-center">
@@ -100,9 +107,9 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {% for item in related %}
             <a href="{% url 'product_detail' item.id %}"
-                class="bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 overflow-hidden transition group">
+               class="bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 overflow-hidden transition group">
                 <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy"
-                    class="w-full h-32 sm:h-36 object-cover group-hover:scale-105 transition duration-300">
+                     class="w-full h-32 sm:h-36 object-cover group-hover:scale-105 transition duration-300">
                 <div class="p-3">
                     <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 min-h-[2.5rem]">{{ item.name }}</h3>
                     <span class="text-base font-bold text-green-600">{{ item.price }} TK</span>

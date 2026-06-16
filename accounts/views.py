@@ -9,6 +9,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.utils import timezone
 
 from .models import UserProfile
+from .utils import normalize_bd_phone
 
 logger = logging.getLogger(__name__)
 
@@ -41,11 +42,11 @@ def user_login(request):
 def otp_login(request):
     # Step 1 — send OTP
     if request.method == 'POST' and 'send_otp' in request.POST:
-        phone = request.POST.get('phone', '').strip()
+        raw_phone = request.POST.get('phone', '').strip()
+        phone = normalize_bd_phone(raw_phone)
 
-        # Basic validation
-        if not phone or len(phone) != 11 or not phone.isdigit():
-            messages.error(request, 'Please enter a valid 11-digit phone number.')
+        if not phone:
+            messages.error(request, 'Please enter a valid Bangladeshi phone number (e.g. 01812345678 or +8801812345678).')
             return redirect('login')
 
         otp    = str(secrets.randbelow(900000) + 100000)   # 6-digit secure OTP
@@ -117,14 +118,17 @@ def register(request):
         return redirect('product_list')
 
     if request.method == 'POST':
-        username  = request.POST.get('username', '').strip()
-        email     = request.POST.get('email', '').strip()
-        phone     = request.POST.get('phone', '').strip()
-        password1 = request.POST.get('password1', '')
-        password2 = request.POST.get('password2', '')
+        username   = request.POST.get('username', '').strip()
+        email      = request.POST.get('email', '').strip()
+        raw_phone  = request.POST.get('phone', '').strip()
+        phone      = normalize_bd_phone(raw_phone)
+        password1  = request.POST.get('password1', '')
+        password2  = request.POST.get('password2', '')
 
         # Validation
         errors = []
+        if not phone:
+            errors.append('Please enter a valid Bangladeshi phone number (e.g. 01812345678 or +8801812345678).')
         if password1 != password2:
             errors.append('Passwords do not match.')
         if len(password1) < 8:
@@ -138,7 +142,7 @@ def register(request):
             for err in errors:
                 messages.error(request, err)
             return render(request, 'accounts/register.html', {
-                'form_data': {'username': username, 'email': email, 'phone': phone}
+                'form_data': {'username': username, 'email': email, 'phone': raw_phone}
             })
 
         user = User.objects.create_user(
@@ -146,7 +150,7 @@ def register(request):
             email=email,
             password=password1,
         )
-        # Save phone in UserProfile (NOT in first_name)
+        # Save normalized phone in UserProfile (NOT in first_name)
         UserProfile.objects.filter(user=user).update(phone=phone)
 
         login(request, user)

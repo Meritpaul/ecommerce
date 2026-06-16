@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import Product, Category, Banner, Wishlist
 
 
@@ -14,7 +15,7 @@ class CategoryAdmin(admin.ModelAdmin):
                 '<img src="{}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;" />',
                 obj.image.url
             )
-        return format_html('<span style="font-size:24px;">🌿</span>')
+        return mark_safe('<span style="font-size:24px;">🌿</span>')
     thumbnail.short_description = ''
 
     def product_count(self, obj):

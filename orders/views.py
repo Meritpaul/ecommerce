@@ -9,6 +9,7 @@ from django.contrib import messages
 
 from .models import Order, OrderItem
 from cart.cart import Cart
+from accounts.utils import normalize_bd_phone
 
 logger = logging.getLogger(__name__)
 
@@ -31,12 +32,16 @@ def checkout(request):
     remaining_for_free = max(0, threshold - subtotal)
 
     if request.method == 'POST':
-        name    = request.POST.get('name', '').strip()
-        phone   = request.POST.get('phone', '').strip()
-        address = request.POST.get('address', '').strip()
+        name      = request.POST.get('name', '').strip()
+        raw_phone = request.POST.get('phone', '').strip()
+        phone     = normalize_bd_phone(raw_phone)
+        address   = request.POST.get('address', '').strip()
 
         if not (name and phone and address):
-            messages.error(request, 'Please fill in all fields.')
+            if not phone:
+                messages.error(request, 'Please enter a valid Bangladeshi phone number (e.g. 01812345678 or +8801812345678).')
+            else:
+                messages.error(request, 'Please fill in all fields.')
             return render(request, 'orders/checkout.html', {
                 'cart': cart, 'subtotal': subtotal,
                 'delivery': delivery, 'total': total,

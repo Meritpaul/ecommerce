@@ -324,7 +324,7 @@ JAZZMIN_SETTINGS = {
     # UI tweaks
     "related_modal_active": True,
     "custom_css": None,
-    "custom_js": None,
+    "custom_js": "admin/custom_admin.js",
     "show_ui_builder": False,
 
     # Change form layout

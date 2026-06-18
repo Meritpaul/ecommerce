@@ -46,12 +46,12 @@
                         value="{{ request.user.first_name|default:request.user.username }}"
                         class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400">
 
-                    <input type="tel" name="phone" required placeholder="01XXXXXXXXX"
-                        pattern="01[3-9][0-9]{8}" maxlength="11" inputmode="numeric"
+                    <input type="tel" name="phone" required placeholder="01XXXXXXXXX or +8801XXXXXXXXX"
+                        pattern="(\+?880|0)1[3-9][0-9]{8}" maxlength="14" inputmode="tel"
                         value="{{ request.user.profile.phone|default:'' }}"
-                        title="Valid Bangladeshi phone number (e.g., 01812109120)"
+                        title="Valid Bangladeshi phone number (e.g., 01812109120 or +8801812109120)"
                         class="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400
-                                invalid:border-red-400 invalid:focus:ring-red-400">
+                               invalid:border-red-400 invalid:focus:ring-red-400">
 
                     <textarea name="address" required placeholder="Full delivery address (House, Road, Area, City)"
                         rows="3"

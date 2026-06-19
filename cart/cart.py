@@ -20,10 +20,12 @@ class Cart:
             if not product:
                 continue  # skip deleted products
             quantity = item.get('quantity', 0) if isinstance(item, dict) else item
+            unit_price = product.display_price  # respects active discount
             yield {
                 'product':     product,
                 'quantity':    quantity,
-                'total_price': product.price * quantity,
+                'unit_price':  unit_price,
+                'total_price': unit_price * quantity,
             }
 
     def __len__(self):
@@ -53,7 +55,7 @@ class Cart:
         else:
             self.cart[product_id] = {
                 'quantity': 1,
-                'price':    float(product.price),
+                'price':    float(product.display_price),
             }
         self.save()
 

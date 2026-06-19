@@ -133,14 +133,15 @@ def payment_success(request):
     )
 
     for item in cart:
-        product  = item['product']
-        quantity = item['quantity']
+        product    = item['product']
+        quantity   = item['quantity']
+        unit_price = item['unit_price']  # discount-aware price at time of purchase
 
         OrderItem.objects.create(
             order    = order,
             product  = product,
             quantity = quantity,
-            price    = product.price,
+            price    = unit_price,
         )
 
         # Reduce stock (don't go below 0)

@@ -26,22 +26,28 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display   = ('thumbnail', 'name', 'category', 'price', 'stock_badge', 'is_active', 'created_at')
-    list_filter    = ('category', 'is_active')
-    list_editable  = ('price', 'is_active')
-    search_fields  = ('name', 'description')
+    list_display    = ('thumbnail', 'name', 'category', 'price_display', 'tag', 'stock_badge', 'is_active', 'created_at')
+    list_filter     = ('category', 'is_active', 'tag')
+    list_editable   = ('is_active',)
+    search_fields   = ('name', 'description')
     readonly_fields = ('created_at', 'image_preview')
-    list_per_page  = 25
+    list_per_page   = 25
 
     fieldsets = (
         ('Basic Info', {
-            'fields': ('name', 'category', 'description')
+            'fields': ('name', 'category', 'description', 'tag')
         }),
         ('Image', {
             'fields': ('image', 'image_preview')
         }),
         ('Pricing & Stock', {
-            'fields': ('price', 'stock', 'is_active')
+            'fields': ('price', 'discount_price', 'stock', 'is_active'),
+            'description': (
+                'Set "Price" to the regular price. To run a sale, also fill in '
+                '"Discount Price" with the lower sale price — the badge and '
+                'crossed-out price will appear automatically on the site. '
+                'Leave "Discount Price" empty for no discount.'
+            ),
         }),
         ('Timestamps', {
             'fields': ('created_at',),
@@ -66,6 +72,18 @@ class ProductAdmin(admin.ModelAdmin):
             )
         return 'No image uploaded yet'
     image_preview.short_description = 'Preview'
+
+    def price_display(self, obj):
+        if obj.is_on_sale:
+            return format_html(
+                '<span style="color:#16a34a;font-weight:700;">{} TK</span> '
+                '<span style="color:#9ca3af;text-decoration:line-through;font-size:12px;">{} TK</span> '
+                '<span style="background:#fee2e2;color:#dc2626;padding:1px 8px;border-radius:999px;'
+                'font-size:11px;font-weight:600;margin-left:4px;">−{}%</span>',
+                obj.discount_price, obj.price, obj.discount_percent
+            )
+        return format_html('<span style="font-weight:600;">{} TK</span>', obj.price)
+    price_display.short_description = 'Price'
 
     def stock_badge(self, obj):
         if obj.stock == 0:

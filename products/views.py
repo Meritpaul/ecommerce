@@ -8,6 +8,9 @@ from django.urls import reverse
 
 from .models import Product, Category, Banner, Wishlist
 
+# Homepage: how many products to show per category row
+HOMEPAGE_SECTION_SIZE = 8
+
 
 # ─────────────────────────────────────────────
 # PRODUCT LIST  (home page)
@@ -16,6 +19,7 @@ def product_list(request):
     query       = request.GET.get('q', '').strip()
     category_id = request.GET.get('category')
     sort        = request.GET.get('sort', 'newest')
+    page_param  = request.GET.get('page')
 
     products   = Product.objects.select_related('category').filter(is_active=True)
     categories = Category.objects.all()
@@ -38,7 +42,7 @@ def product_list(request):
 
     # Pagination — 12 products per page
     paginator   = Paginator(products, 12)
-    page_number = request.GET.get('page', 1)
+    page_number = page_param or 1
     page_obj    = paginator.get_page(page_number)
 
     # Wishlist IDs for current user (to show filled heart)
@@ -48,11 +52,40 @@ def product_list(request):
             Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
         )
 
+    # ── Homepage sections (GhorerBazar-style category rows) ──
+    # Only build these when the user is browsing the plain homepage —
+    # i.e. no search, no category filter, no explicit page number.
+    # This keeps "filtered results" (search/category/pagination) as a
+    # single clean grid, and the rich homepage layout only for the
+    # default landing view.
+    is_plain_homepage = not query and not category_id and not page_param
+    category_sections  = []
+    best_selling       = []
+
+    if is_plain_homepage:
+        best_selling = list(
+            Product.objects.select_related('category')
+            .filter(is_active=True, tag='best_selling')[:HOMEPAGE_SECTION_SIZE]
+        )
+
+        for cat in categories:
+            cat_products = list(
+                Product.objects.select_related('category')
+                .filter(is_active=True, category=cat)
+                .order_by('-created_at')[:HOMEPAGE_SECTION_SIZE]
+            )
+            if cat_products:
+                category_sections.append({
+                    'category': cat,
+                    'products': cat_products,
+                })
+
     return render(request, 'products/product_list.html', {
-        'products':     page_obj,
-        'categories':   categories,
-        'banners':      banners,
-        'query':        query,
+        'products':           page_obj,
+        'categories':         categories,
+        'banners':            banners,
+        'query':              query,
+        'sort':                sort,
         'sort':         sort,
         'selected_cat': category_id,
         'wishlist_ids': wishlist_ids,

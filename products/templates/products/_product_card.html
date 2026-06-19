@@ -1,0 +1,91 @@
+{% load product_extras %}
+<div class="bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 border border-gray-100 overflow-hidden transition-all duration-300 group flex flex-col h-full">
+
+    <!-- Image + overlays wrapper -->
+    <div class="relative">
+        <a href="{% url 'product_detail' product.id %}" class="block overflow-hidden">
+            <img src="{{ product.image.url }}"
+                alt="{{ product.name }}"
+                loading="lazy"
+                width="400" height="300"
+                class="w-full h-32 sm:h-40 object-cover group-hover:scale-110 transition-transform duration-500 ease-out">
+        </a>
+
+        <!-- Badge stack (top-left): tag badge + discount badge -->
+        <div class="absolute top-2 left-2 flex flex-col gap-1 items-start pointer-events-none">
+            {% if product.tag %}
+            <span class="{{ product.tag|tag_badge_class }} text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                {{ product.tag_label }}
+            </span>
+            {% endif %}
+
+            {% if product.is_on_sale %}
+            <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                Save {{ product.discount_percent }}%
+            </span>
+            {% endif %}
+
+            {% if product.stock > 0 and product.stock <= 5 %}
+            <span class="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                Only {{ product.stock }} left
+            </span>
+            {% endif %}
+        </div>
+
+        {% if product.stock == 0 %}
+        <a href="{% url 'product_detail' product.id %}"
+            class="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-[1px]">
+            <span class="text-white text-sm font-bold border border-white px-3 py-1 rounded-lg">Stock Out</span>
+        </a>
+        {% endif %}
+
+        <!-- Wishlist heart -->
+        {% if user.is_authenticated %}
+        <button onclick="toggleWishlist({{ product.id }}, this)"
+                data-wishlisted="{% if product.id in wishlist_ids %}true{% else %}false{% endif %}"
+                class="wishlist-btn absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow hover:scale-110 transition opacity-0 group-hover:opacity-100 sm:opacity-100"
+                aria-label="Toggle wishlist">
+            <span class="text-base">{% if product.id in wishlist_ids %}❤️{% else %}🤍{% endif %}</span>
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Info -->
+    <div class="p-3 flex flex-col flex-1">
+        <a href="{% url 'product_detail' product.id %}">
+            <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 min-h-[2.5rem] group-hover:text-orange-500 transition">
+                {{ product.name }}
+            </h3>
+        </a>
+        {% if product.category %}
+        <p class="text-xs text-gray-400 mt-0.5">{{ product.category.name }}</p>
+        {% endif %}
+
+        <!-- Price row: discount price + crossed-out original, or just price -->
+        <div class="mt-2 mb-2">
+            {% if product.is_on_sale %}
+            <div class="flex items-baseline gap-2 flex-wrap">
+                <span class="text-base font-bold text-green-600">{{ product.discount_price }} TK</span>
+                <span class="text-xs text-gray-400 line-through">{{ product.price }} TK</span>
+            </div>
+            {% else %}
+            <span class="text-base font-bold text-green-600">{{ product.price }} TK</span>
+            {% endif %}
+        </div>
+
+        <!-- Add to Cart -->
+        <div class="mt-auto">
+            {% if product.stock > 0 %}
+            <button onclick="addToCart({{ product.id }})"
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">
+                🛒 Add To Cart
+            </button>
+            {% else %}
+            <button disabled
+                class="w-full bg-gray-200 text-gray-400 text-xs font-semibold py-2 rounded-lg cursor-not-allowed">
+                Stock Out
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -24,10 +24,26 @@ def is_new(value, days=7):
     """
     Returns True if `value` (a datetime) is within the last `days` days.
     Usage: {{ product.created_at|is_new }}  -> defaults to 7 days
-            {{ product.created_at|is_new:3 }} -> custom window
+        {{ product.created_at|is_new:3 }} -> custom window
     """
     if not value:
         return False
 
     delta = timezone.now() - value
     return delta.days < int(days)
+
+
+TAG_BADGE_CLASSES = {
+    'best_selling': 'bg-amber-500 text-white',
+    'new_arrival':  'bg-green-500 text-white',
+    'pre_order':    'bg-blue-500 text-white',
+}
+
+
+@register.filter
+def tag_badge_class(tag_value):
+    """
+    Returns Tailwind classes for a product tag badge.
+    Usage: {{ product.tag|tag_badge_class }}
+    """
+    return TAG_BADGE_CLASSES.get(tag_value, 'bg-gray-500 text-white')

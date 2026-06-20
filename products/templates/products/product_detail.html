@@ -24,15 +24,22 @@
                  alt="{{ product.name }}"
                  class="w-full rounded-2xl shadow object-cover aspect-square">
 
-            {% if product.created_at|is_new %}
-            <span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                ✨ New
-            </span>
-            {% endif %}
+            <div class="absolute top-3 left-3 flex flex-col gap-1.5 items-start">
+                {% if product.tag %}
+                <span class="{{ product.tag|tag_badge_class }} text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                    {{ product.tag_label }}
+                </span>
+                {% endif %}
+                {% if product.is_on_sale %}
+                <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                    Save {{ product.discount_percent }}%
+                </span>
+                {% endif %}
+            </div>
 
             {% if product.stock == 0 %}
             <div class="absolute inset-0 bg-black bg-opacity-50 rounded-2xl flex items-center justify-center">
-                <span class="text-white text-lg font-bold">Out of Stock</span>
+                <span class="text-white text-lg font-bold">Stock Out</span>
             </div>
             {% endif %}
         </div>
@@ -47,8 +54,17 @@
 
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-3">{{ product.name }}</h1>
 
-            <div class="flex items-center gap-3 mb-4">
+            <div class="flex items-center gap-3 mb-4 flex-wrap">
+                {% if product.is_on_sale %}
+                <span class="text-3xl font-bold text-green-600">{{ product.discount_price }} TK</span>
+                <span class="text-lg text-gray-400 line-through">{{ product.price }} TK</span>
+                <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full">
+                    Save {{ product.amount_saved }} TK
+                </span>
+                {% else %}
                 <span class="text-3xl font-bold text-green-600">{{ product.price }} TK</span>
+                {% endif %}
+
                 {% if product.stock > 0 and product.stock <= 5 %}
                 <span class="text-xs font-semibold text-orange-500 bg-orange-50 px-2 py-1 rounded-full">
                     ⚡ Only {{ product.stock }} left
@@ -73,7 +89,7 @@
                 {% else %}
                 <button disabled
                     class="flex-1 bg-gray-200 text-gray-400 py-3.5 rounded-xl text-base font-semibold cursor-not-allowed">
-                    Out of Stock
+                    Stock Out
                 </button>
                 {% endif %}
 
@@ -105,16 +121,8 @@
     <div class="mt-10">
         <h2 class="text-lg font-bold text-gray-800 mb-4">You may also like</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {% for item in related %}
-            <a href="{% url 'product_detail' item.id %}"
-               class="bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 overflow-hidden transition group">
-                <img src="{{ item.image.url }}" alt="{{ item.name }}" loading="lazy"
-                     class="w-full h-32 sm:h-36 object-cover group-hover:scale-105 transition duration-300">
-                <div class="p-3">
-                    <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 min-h-[2.5rem]">{{ item.name }}</h3>
-                    <span class="text-base font-bold text-green-600">{{ item.price }} TK</span>
-                </div>
-            </a>
+            {% for product in related %}
+            {% include 'products/_product_card.html' %}
             {% endfor %}
         </div>
     </div>

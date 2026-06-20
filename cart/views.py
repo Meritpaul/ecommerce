@@ -65,13 +65,16 @@ def cart_api(request):
 
     items = []
     for item in cart:
+        product = item['product']
         items.append({
-            'id':       item['product'].id,
-            'name':     item['product'].name,
-            'price':    float(item['product'].price),
-            'quantity': item['quantity'],
-            'total':    float(item['total_price']),
-            'image':    item['product'].image.url if item['product'].image else '',
+            'id':             product.id,
+            'name':           product.name,
+            'price':          float(item['unit_price']),    # discount-aware price actually charged
+            'original_price': float(product.price),
+            'on_sale':        product.is_on_sale,
+            'quantity':       item['quantity'],
+            'total':          float(item['total_price']),
+            'image':          product.image.url if product.image else '',
         })
 
     return _cart_summary(cart, extra={'items': items})

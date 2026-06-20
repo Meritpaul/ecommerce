@@ -57,7 +57,7 @@
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
 <!-- ═══════════════════════════════════════════
-    NAVBAR
+     NAVBAR
 ════════════════════════════════════════════ -->
 <header class="bg-white shadow-sm sticky top-0 z-30">
 <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
@@ -68,7 +68,7 @@
             class="text-gray-600 hover:text-orange-500 transition p-1">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16"/>
+                      d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
         </button>
 
@@ -83,9 +83,9 @@
     <!-- Desktop Search -->
     <form method="GET" action="/" class="hidden md:flex flex-1 max-w-md">
         <input type="text" name="q"
-            value="{{ request.GET.q }}"
-            placeholder="Search products..."
-            class="flex-1 px-4 py-2 border border-r-0 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+               value="{{ request.GET.q }}"
+               placeholder="Search products..."
+               class="flex-1 px-4 py-2 border border-r-0 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
         <button type="submit"
             class="bg-orange-500 hover:bg-orange-600 text-white px-4 rounded-r-lg transition">
             🔍
@@ -132,10 +132,10 @@
             class="relative p-2 hover:bg-orange-50 rounded-lg transition">
             <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
             </svg>
             <span id="cart-count"
-                class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold transition-transform duration-200">
+                  class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold transition-transform duration-200">
                 0
             </span>
         </button>
@@ -146,9 +146,9 @@
 <div class="md:hidden px-4 pb-2">
     <form method="GET" action="/" class="flex">
         <input type="text" name="q"
-            value="{{ request.GET.q }}"
-            placeholder="Search products..."
-            class="flex-1 px-3 py-2 border border-r-0 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+               value="{{ request.GET.q }}"
+               placeholder="Search products..."
+               class="flex-1 px-3 py-2 border border-r-0 rounded-l-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
         <button type="submit"
             class="bg-orange-500 text-white px-3 rounded-r-lg text-sm">🔍</button>
     </form>
@@ -157,13 +157,13 @@
 
 
 <!-- ═══════════════════════════════════════════
-    SIDE MENU
+     SIDE MENU
 ════════════════════════════════════════════ -->
 <div id="overlay" onclick="toggleMenu()"
-    class="fixed inset-0 bg-black bg-opacity-40 hidden z-40 transition-opacity"></div>
+     class="fixed inset-0 bg-black bg-opacity-40 hidden z-40 transition-opacity"></div>
 
 <aside id="sideMenu"
-        class="fixed top-0 left-0 -translate-x-full w-72 h-full bg-white shadow-2xl z-50 transition-transform duration-300 flex flex-col">
+       class="fixed top-0 left-0 -translate-x-full w-72 h-full bg-white shadow-2xl z-50 transition-transform duration-300 flex flex-col">
 
     <div class="p-5 border-b flex items-center justify-between">
         <span class="font-bold text-lg">🌿 PureShop</span>
@@ -188,7 +188,7 @@
         <div class="mt-3 mb-1 px-3 text-xs text-gray-400 font-semibold uppercase tracking-wider">Categories</div>
         {% for cat in categories %}
         <a href="/?category={{ cat.id }}"
-            class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-orange-50 text-gray-600 hover:text-orange-500 transition text-sm">
+           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-orange-50 text-gray-600 hover:text-orange-500 transition text-sm">
             {% if cat.image %}<img src="{{ cat.image.url }}" class="w-5 h-5 rounded-full object-cover">{% else %}🌿{% endif %}
             {{ cat.name }}
         </a>
@@ -210,7 +210,7 @@
 
 
 <!-- ═══════════════════════════════════════════
-    FLASH MESSAGES
+     FLASH MESSAGES
 ════════════════════════════════════════════ -->
 {% if messages %}
 <div id="flash-messages" class="fixed top-20 right-4 z-50 space-y-2 max-w-sm">
@@ -230,7 +230,7 @@
 
 
 <!-- ═══════════════════════════════════════════
-    MAIN CONTENT
+     MAIN CONTENT
 ════════════════════════════════════════════ -->
 <main class="flex-1 max-w-6xl mx-auto w-full pb-20 md:pb-0">
     {% block content %}{% endblock %}
@@ -238,14 +238,14 @@
 
 
 <!-- ═══════════════════════════════════════════
-    CART DRAWER
+     CART DRAWER
 ════════════════════════════════════════════ -->
 <div id="cart-overlay"
-    class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"
-    onclick="toggleCart()"></div>
+     class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"
+     onclick="toggleCart()"></div>
 
 <div id="cart-drawer"
-    class="fixed top-0 right-0 w-full sm:w-96 h-full bg-white shadow-2xl translate-x-full transition-transform duration-300 z-50 flex flex-col">
+     class="fixed top-0 right-0 w-full sm:w-96 h-full bg-white shadow-2xl translate-x-full transition-transform duration-300 z-50 flex flex-col">
 
     <div class="flex justify-between items-center p-5 border-b">
         <h2 class="text-xl font-bold">🛒 Cart</h2>
@@ -257,8 +257,8 @@
         <p id="free-delivery-text" class="text-xs font-medium text-gray-600 mb-1.5"></p>
         <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
             <div id="free-delivery-progress"
-                class="h-full bg-gradient-to-r from-orange-400 to-green-500 rounded-full transition-all duration-500"
-                style="width: 0%"></div>
+                 class="h-full bg-gradient-to-r from-orange-400 to-green-500 rounded-full transition-all duration-500"
+                 style="width: 0%"></div>
         </div>
     </div>
 
@@ -271,7 +271,7 @@
         </div>
         <p class="text-xs text-gray-400 mb-3">Delivery fee calculated at checkout</p>
         <a href="/checkout/"
-            class="block text-center w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition">
+           class="block text-center w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition">
             Proceed to Checkout →
         </a>
         <button onclick="toggleCart()"
@@ -283,7 +283,7 @@
 
 
 <!-- ═══════════════════════════════════════════
-    MOBILE BOTTOM NAVIGATION
+     MOBILE BOTTOM NAVIGATION
 ════════════════════════════════════════════ -->
 <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
     <div class="grid grid-cols-4 h-16">
@@ -309,7 +309,7 @@
             </svg>
             <span class="text-[11px] font-medium">Cart</span>
             <span id="mobile-cart-count"
-                    class="absolute top-1 right-7 bg-orange-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                  class="absolute top-1 right-7 bg-orange-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 0
             </span>
         </button>
@@ -336,12 +336,12 @@
 
 
 <!-- ═══════════════════════════════════════════
-    WHATSAPP CHAT BUTTON
+     WHATSAPP CHAT BUTTON
 ════════════════════════════════════════════ -->
-<a href="https://wa.me/8801812109812?text=Hi%20PureShop%2C%20I%20need%20help!"
-    target="_blank" rel="noopener"
-    class="fixed bottom-20 md:bottom-6 right-5 z-40 bg-green-500 hover:bg-green-600 text-white p-3.5 rounded-full shadow-lg hover:scale-110 transition"
-    title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
+<a href="https://wa.me/8801812109120?text=Hi%20PureShop%2C%20I%20need%20help!"
+   target="_blank" rel="noopener"
+   class="fixed bottom-20 md:bottom-6 right-5 z-40 bg-green-500 hover:bg-green-600 text-white p-3.5 rounded-full shadow-lg hover:scale-110 transition"
+   title="Chat on WhatsApp" aria-label="Chat on WhatsApp">
     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
     </svg>
@@ -349,7 +349,7 @@
 
 
 <!-- ═══════════════════════════════════════════
-    FOOTER
+     FOOTER
 ════════════════════════════════════════════ -->
 <footer class="bg-gray-900 text-gray-400 mt-12">
     <div class="max-w-6xl mx-auto px-6 py-12 grid sm:grid-cols-2 md:grid-cols-4 gap-8">
@@ -402,8 +402,8 @@
             <h3 class="text-white font-semibold mb-4">Contact Us</h3>
             <ul class="space-y-2 text-sm">
                 <li class="flex items-start gap-2">📍 <span>Uttara, Dhaka, Bangladesh</span></li>
-                <li class="flex items-center gap-2">📞 <a href="tel:+8801812109812" class="hover:text-orange-400 transition">+880 1812-109812</a></li>
-                <li class="flex items-center gap-2">✉ <a href="mailto:meritpaul12@gmail.com" class="hover:text-orange-400 transition">meritpaul12@gmail.com</a></li>
+                <li class="flex items-center gap-2">📞 <a href="tel:+8801812109120" class="hover:text-orange-400 transition">+880 1812-109120</a></li>
+                <li class="flex items-center gap-2">✉ <a href="mailto:support@pureshop.com" class="hover:text-orange-400 transition">support@pureshop.com</a></li>
             </ul>
         </div>
     </div>
@@ -418,7 +418,7 @@
 
 
 <!-- ═══════════════════════════════════════════
-    JAVASCRIPT
+     JAVASCRIPT
 ════════════════════════════════════════════ -->
 <script>
 // ── Side Menu ──────────────────────────────
@@ -516,11 +516,14 @@ window.loadCart = function() {
             container.innerHTML = data.items.map(item => `
                 <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
                     <img src="${item.image}" alt="${item.name}"
-                        class="w-14 h-14 object-cover rounded-lg flex-shrink-0"
-                        onerror="this.style.display='none'">
+                         class="w-14 h-14 object-cover rounded-lg flex-shrink-0"
+                         onerror="this.style.display='none'">
                     <div class="flex-1 min-w-0">
                         <p class="font-medium text-sm text-gray-800 truncate">${item.name}</p>
-                        <p class="text-xs text-gray-500">${item.price} TK each</p>
+                        <p class="text-xs text-gray-500">
+                            ${item.price} TK each
+                            ${item.on_sale ? `<span class="line-through text-gray-400 ml-1">${item.original_price} TK</span>` : ''}
+                        </p>
                         <div class="flex items-center gap-2 mt-1.5">
                             <button class="cart-btn w-6 h-6 bg-white border rounded-full text-sm font-bold hover:bg-orange-50 hover:border-orange-400 transition"
                                     data-action="decrease" data-product-id="${item.id}">−</button>

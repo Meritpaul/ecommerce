@@ -10,14 +10,14 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 divide-y">
         {% for item in cart %}
         <div id="item-{{ item.product.id }}"
-            class="flex gap-4 p-4 items-center"
-            data-price="{{ item.product.price }}">
+             class="flex gap-4 p-4 items-center"
+             data-price="{{ item.unit_price }}">
 
             <!-- Image -->
             <a href="{% url 'product_detail' item.product.id %}" class="flex-shrink-0">
                 <img src="{{ item.product.image.url }}"
-                    alt="{{ item.product.name }}"
-                    class="w-20 h-20 object-cover rounded-xl">
+                     alt="{{ item.product.name }}"
+                     class="w-20 h-20 object-cover rounded-xl">
             </a>
 
             <!-- Info -->
@@ -27,7 +27,12 @@
                         {{ item.product.name }}
                     </h3>
                 </a>
-                <p class="text-gray-500 text-sm mt-0.5">{{ item.product.price }} TK each</p>
+                <p class="text-gray-500 text-sm mt-0.5">
+                    {{ item.unit_price }} TK each
+                    {% if item.product.is_on_sale %}
+                    <span class="line-through text-gray-400 ml-1">{{ item.product.price }} TK</span>
+                    {% endif %}
+                </p>
 
                 <!-- Quantity Controls -->
                 <div class="flex items-center gap-2 mt-2">
@@ -72,11 +77,11 @@
         <p class="text-xs text-gray-400 mb-4">Delivery fee will be calculated at checkout (Free above 500 TK)</p>
         <div class="flex gap-3">
             <a href="/"
-                class="flex-1 text-center border border-gray-200 text-gray-600 py-3 rounded-xl hover:bg-gray-50 transition font-medium">
+               class="flex-1 text-center border border-gray-200 text-gray-600 py-3 rounded-xl hover:bg-gray-50 transition font-medium">
                 ← Continue Shopping
             </a>
             <a href="/checkout/"
-                class="flex-1 text-center bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition">
+               class="flex-1 text-center bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition">
                 Checkout →
             </a>
         </div>

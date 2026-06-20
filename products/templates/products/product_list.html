@@ -5,7 +5,7 @@
 {% block content %}
 
 <!-- ═══════════════════════════════════════════
-    HERO BANNER SLIDER
+     HERO BANNER SLIDER
 ════════════════════════════════════════════ -->
 {% if banners %}
 <div class="px-4 pt-4">
@@ -16,9 +16,9 @@
             {% if banner.link %}<a href="{{ banner.link }}" class="absolute inset-0 z-10" aria-label="{{ banner.title|default:'Banner link' }}"></a>{% endif %}
 
             <img src="{{ banner.image.url }}"
-                alt="{{ banner.title|default:'PureShop Banner' }}"
-                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                class="w-full h-full object-cover">
+                 alt="{{ banner.title|default:'PureShop Banner' }}"
+                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                 class="w-full h-full object-cover">
 
             {% if banner.title %}
             <!-- Gradient overlay + text -->
@@ -50,12 +50,12 @@
         <!-- Prev/Next arrows (desktop hover) -->
         <button id="banner-prev" aria-label="Previous slide"
             class="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center
-                bg-white/80 hover:bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition">
+                   bg-white/80 hover:bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition">
             ‹
         </button>
         <button id="banner-next" aria-label="Next slide"
             class="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center
-                bg-white/80 hover:bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition">
+                   bg-white/80 hover:bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition">
             ›
         </button>
         {% endif %}
@@ -103,15 +103,15 @@
 
 
 <!-- ═══════════════════════════════════════════
-    CATEGORIES STRIP
+     CATEGORIES STRIP
 ════════════════════════════════════════════ -->
 {% if categories %}
 <div class="px-4 mt-6 max-w-6xl mx-auto">
-    <h2 class="text-lg font-bold text-gray-800 mb-3">Shop by Category</h2>
+    <h2 class="text-lg font-bold text-gray-800 mb-3">Featured Categories</h2>
     <div class="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
 
         <a href="/"
-            class="flex-shrink-0 flex flex-col items-center gap-1 w-20 group">
+           class="flex-shrink-0 flex flex-col items-center gap-1 w-20 group">
             <div class="w-14 h-14 rounded-full flex items-center justify-center text-xl transition
                 {% if not selected_cat %}bg-orange-500 text-white{% else %}bg-orange-50 text-orange-500 group-hover:bg-orange-100{% endif %}">
                 🛍️
@@ -121,7 +121,7 @@
 
         {% for cat in categories %}
         <a href="/?category={{ cat.id }}"
-            class="flex-shrink-0 flex flex-col items-center gap-1 w-20 group">
+           class="flex-shrink-0 flex flex-col items-center gap-1 w-20 group">
             <div class="w-14 h-14 rounded-full flex items-center justify-center overflow-hidden transition
                 {% if selected_cat == cat.id|stringformat:"s" %}bg-orange-500{% else %}bg-orange-50 group-hover:bg-orange-100{% endif %}">
                 {% if cat.image %}
@@ -138,38 +138,91 @@
 {% endif %}
 
 
-<!-- ═══════════════════════════════════════════
-    SEARCH RESULT / SORT BAR
-════════════════════════════════════════════ -->
-<div class="px-4 mt-6 max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-3">
-    <div>
-        {% if query %}
-        <h2 class="text-lg font-bold text-gray-800">
-            Results for "<span class="text-orange-500">{{ query }}</span>"
-        </h2>
-        <p class="text-sm text-gray-500">{{ products.paginator.count }} product{{ products.paginator.count|pluralize }} found</p>
-        {% else %}
-        <h2 class="text-lg font-bold text-gray-800">Fresh Picks for You 🌿</h2>
-        {% endif %}
+{% if is_plain_homepage %}
+
+    <!-- ═══════════════════════════════════════════
+         BEST SELLING (homepage only)
+    ════════════════════════════════════════════ -->
+    {% if best_selling %}
+    <div class="px-4 mt-8 max-w-6xl mx-auto">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-bold text-gray-800">🔥 Best Selling</h2>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {% for product in best_selling %}
+            {% include 'products/_product_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+
+    <!-- ═══════════════════════════════════════════
+         CATEGORY-WISE SECTIONS (homepage only)
+    ════════════════════════════════════════════ -->
+    {% for section in category_sections %}
+    <div class="px-4 mt-8 max-w-6xl mx-auto">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-bold text-gray-800">{{ section.category.name }}</h2>
+            <a href="/?category={{ section.category.id }}"
+               class="text-sm font-medium text-orange-500 hover:underline whitespace-nowrap">
+                View all →
+            </a>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {% for product in section.products %}
+            {% include 'products/_product_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+
+    <!-- ═══════════════════════════════════════════
+         JUST FOR YOU (homepage final grid)
+    ════════════════════════════════════════════ -->
+    <div class="px-4 mt-8 max-w-6xl mx-auto">
+        <h2 class="text-lg font-bold text-gray-800 mb-3">🌟 Just For You</h2>
     </div>
 
-    <form method="GET" class="flex items-center gap-2">
-        {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
-        {% if selected_cat %}<input type="hidden" name="category" value="{{ selected_cat }}">{% endif %}
-        <label for="sort" class="text-sm text-gray-500">Sort:</label>
-        <select name="sort" id="sort" onchange="this.form.submit()"
-            class="text-sm border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-400">
-            <option value="newest"    {% if sort == 'newest' %}selected{% endif %}>Newest</option>
-            <option value="oldest"    {% if sort == 'oldest' %}selected{% endif %}>Oldest</option>
-            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low → High</option>
-            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High → Low</option>
-        </select>
-    </form>
-</div>
+{% else %}
+
+    <!-- ═══════════════════════════════════════════
+         SEARCH RESULT / SORT BAR (filtered views only)
+    ════════════════════════════════════════════ -->
+    <div class="px-4 mt-6 max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-3">
+        <div>
+            {% if query %}
+            <h2 class="text-lg font-bold text-gray-800">
+                Results for "<span class="text-orange-500">{{ query }}</span>"
+            </h2>
+            <p class="text-sm text-gray-500">{{ products.paginator.count }} product{{ products.paginator.count|pluralize }} found</p>
+            {% elif selected_cat %}
+            <h2 class="text-lg font-bold text-gray-800">Category Products</h2>
+            {% else %}
+            <h2 class="text-lg font-bold text-gray-800">🌟 Just For You</h2>
+            {% endif %}
+        </div>
+
+        <form method="GET" class="flex items-center gap-2">
+            {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+            {% if selected_cat %}<input type="hidden" name="category" value="{{ selected_cat }}">{% endif %}
+            <label for="sort" class="text-sm text-gray-500">Sort:</label>
+            <select name="sort" id="sort" onchange="this.form.submit()"
+                class="text-sm border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                <option value="newest"    {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+                <option value="oldest"    {% if sort == 'oldest' %}selected{% endif %}>Oldest</option>
+                <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low → High</option>
+                <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High → Low</option>
+            </select>
+        </form>
+    </div>
+
+{% endif %}
 
 
 <!-- ═══════════════════════════════════════════
-    PRODUCT GRID
+     PRODUCT GRID
 ════════════════════════════════════════════ -->
 <div class="px-4 mt-4 max-w-6xl mx-auto">
     {% if products %}
@@ -184,7 +237,7 @@
     <div class="flex justify-center items-center gap-2 mt-2 pb-10 flex-wrap">
         {% if products.has_previous %}
         <a href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_cat %}&category={{ selected_cat }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
-            class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-orange-50 transition">← Prev</a>
+           class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-orange-50 transition">← Prev</a>
         {% endif %}
 
         {% for num in products.paginator.page_range %}
@@ -192,13 +245,13 @@
             <span class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-semibold">{{ num }}</span>
             {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
             <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if selected_cat %}&category={{ selected_cat }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
-                class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-orange-50 transition">{{ num }}</a>
+               class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-orange-50 transition">{{ num }}</a>
             {% endif %}
         {% endfor %}
 
         {% if products.has_next %}
         <a href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_cat %}&category={{ selected_cat }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
-            class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-orange-50 transition">Next →</a>
+           class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-orange-50 transition">Next →</a>
         {% endif %}
     </div>
     {% endif %}

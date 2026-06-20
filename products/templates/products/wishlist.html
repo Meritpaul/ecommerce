@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load product_extras %}
 
 {% block title %}My Wishlist{% endblock %}
 
@@ -10,9 +11,22 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {% for item in items %}
         <div class="bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 overflow-hidden transition group relative">
-            <a href="{% url 'product_detail' item.product.id %}" class="block">
+            <a href="{% url 'product_detail' item.product.id %}" class="block relative">
                 <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" loading="lazy"
-                    class="w-full h-32 sm:h-40 object-cover group-hover:scale-105 transition duration-300">
+                     class="w-full h-32 sm:h-40 object-cover group-hover:scale-105 transition duration-300">
+
+                <div class="absolute top-2 left-2 flex flex-col gap-1 items-start pointer-events-none">
+                    {% if item.product.tag %}
+                    <span class="{{ item.product.tag|tag_badge_class }} text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                        {{ item.product.tag_label }}
+                    </span>
+                    {% endif %}
+                    {% if item.product.is_on_sale %}
+                    <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                        Save {{ item.product.discount_percent }}%
+                    </span>
+                    {% endif %}
+                </div>
             </a>
 
             <button onclick="removeWishlist({{ item.product.id }}, this)"
@@ -27,17 +41,29 @@
                         {{ item.product.name }}
                     </h3>
                 </a>
-                <div class="flex items-center justify-between mt-2">
-                    <span class="text-base font-bold text-green-600">{{ item.product.price }} TK</span>
-                    {% if item.product.stock > 0 %}
-                    <button onclick="addToCart({{ item.product.id }})"
-                        class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition">
-                        + Cart
-                    </button>
+
+                <div class="mt-2 mb-2">
+                    {% if item.product.is_on_sale %}
+                    <div class="flex items-baseline gap-2 flex-wrap">
+                        <span class="text-base font-bold text-green-600">{{ item.product.discount_price }} TK</span>
+                        <span class="text-xs text-gray-400 line-through">{{ item.product.price }} TK</span>
+                    </div>
                     {% else %}
-                    <span class="text-xs text-gray-400 font-semibold">Sold Out</span>
+                    <span class="text-base font-bold text-green-600">{{ item.product.price }} TK</span>
                     {% endif %}
                 </div>
+
+                {% if item.product.stock > 0 %}
+                <button onclick="addToCart({{ item.product.id }})"
+                    class="w-full bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold py-2 rounded-lg transition">
+                    🛒 Add To Cart
+                </button>
+                {% else %}
+                <button disabled
+                    class="w-full bg-gray-200 text-gray-400 text-xs font-semibold py-2 rounded-lg cursor-not-allowed">
+                    Stock Out
+                </button>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

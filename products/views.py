@@ -85,10 +85,12 @@ def product_list(request):
         'categories':         categories,
         'banners':            banners,
         'query':              query,
-        'sort':                sort,
-        'sort':         sort,
-        'selected_cat': category_id,
-        'wishlist_ids': wishlist_ids,
+        'sort':               sort,
+        'selected_cat':       category_id,
+        'wishlist_ids':       wishlist_ids,
+        'is_plain_homepage':  is_plain_homepage,
+        'category_sections':  category_sections,
+        'best_selling':       best_selling,
     })
 
 
@@ -97,20 +99,23 @@ def product_list(request):
 # ─────────────────────────────────────────────
 def product_detail(request, id):
     product   = get_object_or_404(Product, id=id, is_active=True)
-    related   = Product.objects.filter(
+    related   = Product.objects.select_related('category').filter(
         category=product.category, is_active=True
     ).exclude(id=id)[:4]
 
-    in_wishlist = False
+    in_wishlist  = False
+    wishlist_ids = []
     if request.user.is_authenticated:
-        in_wishlist = Wishlist.objects.filter(
-            user=request.user, product=product
-        ).exists()
+        wishlist_ids = list(
+            Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True)
+        )
+        in_wishlist = product.id in wishlist_ids
 
     return render(request, 'products/product_detail.html', {
-        'product':     product,
-        'related':     related,
-        'in_wishlist': in_wishlist,
+        'product':      product,
+        'related':      related,
+        'in_wishlist':  in_wishlist,
+        'wishlist_ids': wishlist_ids,
     })
 
 
@@ -125,10 +130,11 @@ def category_products(request, id):
     page_obj    = paginator.get_page(request.GET.get('page', 1))
 
     return render(request, 'products/product_list.html', {
-        'products':     page_obj,
-        'selected_cat': str(id),
-        'banners':      Banner.objects.filter(is_active=True),
-        'categories':   Category.objects.all(),
+        'products':          page_obj,
+        'selected_cat':      str(id),
+        'banners':           Banner.objects.filter(is_active=True),
+        'categories':        Category.objects.all(),
+        'is_plain_homepage': False,
     })
 
 

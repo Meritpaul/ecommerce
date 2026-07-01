@@ -13,7 +13,7 @@
         <div class="bg-white rounded-2xl shadow-sm hover:shadow-md border border-gray-100 overflow-hidden transition group relative">
             <a href="{% url 'product_detail' item.product.id %}" class="block relative">
                 <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" loading="lazy"
-                     class="w-full h-32 sm:h-40 object-cover group-hover:scale-105 transition duration-300">
+                    class="w-full h-32 sm:h-40 object-cover group-hover:scale-105 transition duration-300">
 
                 <div class="absolute top-2 left-2 flex flex-col gap-1 items-start pointer-events-none">
                     {% if item.product.tag %}

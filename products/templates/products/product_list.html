@@ -28,7 +28,7 @@
                         {{ banner.title }}
                     </h2>
                     {% if banner.link %}
-                    <span class="inline-block bg-orange-500 hover:bg-orange-600 text-white text-sm sm:text-base font-semibold px-5 py-2.5 rounded-xl transition shadow-lg">
+                    <span class="inline-block bg-green-500 hover:bg-green-600 text-white text-sm sm:text-base font-semibold px-5 py-2.5 rounded-xl transition shadow-lg">
                         Shop Now →
                     </span>
                     {% endif %}
@@ -113,7 +113,7 @@
         <a href="/"
            class="flex-shrink-0 flex flex-col items-center gap-1 w-20 group">
             <div class="w-14 h-14 rounded-full flex items-center justify-center text-xl transition
-                {% if not selected_cat %}bg-orange-500 text-white{% else %}bg-orange-50 text-orange-500 group-hover:bg-orange-100{% endif %}">
+                {% if not selected_cat %}bg-green-500 text-white{% else %}bg-green-50 text-green-500 group-hover:bg-green-100{% endif %}">
                 🛍️
             </div>
             <span class="text-xs text-gray-600 text-center font-medium">All</span>
@@ -123,11 +123,11 @@
         <a href="/?category={{ cat.id }}"
            class="flex-shrink-0 flex flex-col items-center gap-1 w-20 group">
             <div class="w-14 h-14 rounded-full flex items-center justify-center overflow-hidden transition
-                {% if selected_cat == cat.id|stringformat:"s" %}bg-orange-500{% else %}bg-orange-50 group-hover:bg-orange-100{% endif %}">
+                {% if selected_cat == cat.id|stringformat:"s" %}bg-green-500{% else %}bg-green-50 group-hover:bg-green-100{% endif %}">
                 {% if cat.image %}
                     <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="w-full h-full object-cover">
                 {% else %}
-                    <span class="text-xl {% if selected_cat == cat.id|stringformat:"s" %}text-white{% else %}text-orange-500{% endif %}">🌿</span>
+                    <span class="text-xl {% if selected_cat == cat.id|stringformat:"s" %}text-white{% else %}text-green-500{% endif %}">🌿</span>
                 {% endif %}
             </div>
             <span class="text-xs text-gray-600 text-center font-medium truncate w-full">{{ cat.name }}</span>
@@ -165,7 +165,7 @@
         <div class="flex items-center justify-between mb-3">
             <h2 class="text-lg font-bold text-gray-800">{{ section.category.name }}</h2>
             <a href="/?category={{ section.category.id }}"
-               class="text-sm font-medium text-orange-500 hover:underline whitespace-nowrap">
+               class="text-sm font-medium text-green-500 hover:underline whitespace-nowrap">
                 View all →
             </a>
         </div>
@@ -194,7 +194,7 @@
         <div>
             {% if query %}
             <h2 class="text-lg font-bold text-gray-800">
-                Results for "<span class="text-orange-500">{{ query }}</span>"
+                Results for "<span class="text-green-500">{{ query }}</span>"
             </h2>
             <p class="text-sm text-gray-500">{{ products.paginator.count }} product{{ products.paginator.count|pluralize }} found</p>
             {% elif selected_cat %}
@@ -209,7 +209,7 @@
             {% if selected_cat %}<input type="hidden" name="category" value="{{ selected_cat }}">{% endif %}
             <label for="sort" class="text-sm text-gray-500">Sort:</label>
             <select name="sort" id="sort" onchange="this.form.submit()"
-                class="text-sm border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                class="text-sm border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-green-400">
                 <option value="newest"    {% if sort == 'newest' %}selected{% endif %}>Newest</option>
                 <option value="oldest"    {% if sort == 'oldest' %}selected{% endif %}>Oldest</option>
                 <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low → High</option>
@@ -237,21 +237,21 @@
     <div class="flex justify-center items-center gap-2 mt-2 pb-10 flex-wrap">
         {% if products.has_previous %}
         <a href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_cat %}&category={{ selected_cat }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
-           class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-orange-50 transition">← Prev</a>
+           class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-green-50 transition">← Prev</a>
         {% endif %}
 
         {% for num in products.paginator.page_range %}
             {% if num == products.number %}
-            <span class="px-3 py-2 bg-orange-500 text-white rounded-lg text-sm font-semibold">{{ num }}</span>
+            <span class="px-3 py-2 bg-green-500 text-white rounded-lg text-sm font-semibold">{{ num }}</span>
             {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
             <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if selected_cat %}&category={{ selected_cat }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
-               class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-orange-50 transition">{{ num }}</a>
+               class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-green-50 transition">{{ num }}</a>
             {% endif %}
         {% endfor %}
 
         {% if products.has_next %}
         <a href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_cat %}&category={{ selected_cat }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
-           class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-orange-50 transition">Next →</a>
+           class="px-3 py-2 bg-white border rounded-lg text-sm hover:bg-green-50 transition">Next →</a>
         {% endif %}
     </div>
     {% endif %}
@@ -264,7 +264,7 @@
         <p class="text-gray-500 mb-6">
             {% if query %}Try a different search term.{% else %}Check back soon — new products coming!{% endif %}
         </p>
-        <a href="/" class="bg-orange-500 text-white px-6 py-3 rounded-xl hover:bg-orange-600 transition inline-block">
+        <a href="/" class="bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-600 transition inline-block">
             Back to Home
         </a>
     </div>

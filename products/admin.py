@@ -89,7 +89,7 @@ class ProductAdmin(admin.ModelAdmin):
         if obj.stock == 0:
             color, text = '#ef4444', 'Out of Stock'
         elif obj.stock <= 5:
-            color, text = '#f97316', f'Low — {obj.stock} left'
+            color, text = '#f59e0b', f'Low — {obj.stock} left'
         else:
             color, text = '#22c55e', f'{obj.stock} in stock'
         return format_html(
